@@ -1,5 +1,5 @@
 Canadian International Development Platform
-===========================================
+-------------------------------------------
 
 Team
 ----
@@ -13,12 +13,33 @@ Peder Jakobsen, Technical Architect, Software Developer, @pederjakobsen, pjakobs
 
 Goals
 -----
-Making data more accessible to others
+The Canadian International Development Platform (CIDP) is a unique data and analytical platform on Canada’s engagement with the developing world. The CIDP is hosted by the North-South Institute, Canada’s only independent development policy think-tank. - See more at: http://cidpnsi.ca/#sthash.feYYCRsO.dpuf
+
+Replacing Tableau with a more flexible and dynamic approach to building real time data dashboards.
+
+Clean data, make it more open and transparent
+
+Provide an API that wraps data in a uniform fashion that is is well documented so that other developers can build visualizations or apps, eg. mobile apps, or to be used at Hackathons
+
+Engage the community
 
 The Data
 --------
 
-Focus on Canadian International Development Data
+The Focus is on Canadian International Development Data:
+
+- CIDA Project Browser http://www.acdi-cida.gc.ca/acdi-cida/acdi-cida.nsf/eng/CAR-530122033-M6W
+- CIDA Historical Project Datasets http://www.acdi-cida.gc.ca/acdi-cida/ACDI-CIDA.nsf/eng/CAR-1128144934-R9J
+- Tracking Post-2015
+- IATI Registry
+
+More data could eventually be added from:
+
+- OECD CRS
+- World Bank
+- etc. etc. 
+
+
 
 Definition of Platform (DMP)
 ----------------------------
@@ -42,6 +63,7 @@ Archicture
 - Data Warehousing - Postgres (?)
 - API - wrapping the data as with a JSON based API
 - Visualization Dashboard - improve the current CIDP 
+	- Project-Level Open Aid Data Explorer
 - Track - use analytics to track the use of platform and dashboard
 
 
