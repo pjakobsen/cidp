@@ -32,7 +32,9 @@ The Focus here is on Canadian International Development Data
 The data will need to be normalized, which requires custom transformation work.
 
 For example, the Country field from the CIDA Project Browser appears as:
-..code-block::
+
+.. code-block::
+
 	"Venezuela: 8.37%,Argentina: 8.33%,Bolivia: 8.33%,Brazil: 8.33%,Chile: 8.33%,Colombia: 8.33%,Ecuador: 8.33%,Guyana: 8.33%,Peru: 8.33%,Paraguay: 8.33%,Suriname: 8.33%,Uruguay: 8.33%"
 
 It will need to be split and applied against the total contribution amount in order to be used for dimensional OLAP queries.
