@@ -23,22 +23,21 @@ Provide an API that wraps data in a uniform fashion that is is well documented s
 
 Engage the community
 
-The Data
---------
+Data Integration
+----------------
+The term data integration refers to the process of combining data from different sources to provide a single comprehensible view on all of the combined data.
 
-The Focus is on Canadian International Development Data:
+The Focus here is on Canadian International Development Data
 
-- CIDA Project Browser http://www.acdi-cida.gc.ca/acdi-cida/acdi-cida.nsf/eng/CAR-530122033-M6W
-- CIDA Historical Project Datasets http://www.acdi-cida.gc.ca/acdi-cida/ACDI-CIDA.nsf/eng/CAR-1128144934-R9J
-- Tracking Post-2015
-- IATI Registry
+The data will need to be normalized, which requires custom transformation work.
 
-More data could eventually be added from:
+For example, the Country field from the CIDA Project Browser appears as:
+"Venezuela: 8.37%,Argentina: 8.33%,Bolivia: 8.33%,Brazil: 8.33%,Chile: 8.33%,Colombia: 8.33%,Ecuador: 8.33%,Guyana: 8.33%,Peru: 8.33%,Paraguay: 8.33%,Suriname: 8.33%,Uruguay: 8.33%"
+It will need to be split and applied against the total contribution amount in order to be used for dimensional OLAP queries.
+Other tasks includes mapping country names against standard ISO country codes, especially when there are different names for the same country, e.g. Congo, Democratic Republic of Congo, Congo, Republic of etc. 
 
-- OECD CRS
-- World Bank
-- etc. etc. 
-
+Since there are many dozens of such task that will have to managed in separate processes, an ETL framework will need to be selected to ensure that the transformation code is manageable.
+Popular ETL/BI frameworks include Pentaho Kettle, Jaspersoft, SpagoBI, OpenI, and Actuate.
 
 
 Definition of Platform (DMP)
@@ -65,6 +64,7 @@ Archicture
 - Visualization Dashboard - improve the current CIDP 
 	- Project-Level Open Aid Data Explorer
 - Track - use analytics to track the use of platform and dashboard
+- Source Code Management and developer collaboration platform (e.g. GitHUB)
 
 
 
