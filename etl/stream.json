@@ -1,0 +1,11 @@
+{
+        "nodes": { 
+            "source": { "type":"csv_source", "resource": "test.csv" },
+            "audit":  { "type":"audit" },
+            "target": { "type":"pretty_printer" }
+        },
+        "connections": [
+            ["source", "audit"],
+            ["audit", "target"]
+        ]
+    }
