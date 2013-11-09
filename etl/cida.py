@@ -1,29 +1,28 @@
-import bubbles
-import sys
+import sys  
+from petl import *
+from petl.fluent import etl
 
-URL="projects.csv"
-#URL = "http://www.acdi-cida.gc.ca/cidaweb/cpo.nsf/vLUOpenDataFile/PBOpenData/$file/Project%20Browser%20English.csv"
+datadir="/Users/peder/dev/cidp/";
+csvfiles = { "cida-project-browser":datadir+"Project Browser English.csv",
+         "hdps-2012":datadir+"HPDS-2011-2012-eng.csv",
+         "hdps-2011":datadir+"HPDS-2010-2011-eng.csv",
+         "hdps-2010":datadir+"HPDS-2009-2010-eng.csv",
+         "hdps-2009":datadir+"HPDS-2008-2009-eng.csv",
+         "hdps-2008":datadir+"HPDS-2007-2008-eng.csv"}
 
-# Prepare list of stores, we just need one temporary SQL store
-
-stores = {
-    "target": bubbles.open_store("sql", "sqlite:///cida.db")
-}
-
-        
-
-
-#p = bubbles.Pipeline(stores=stores)
-p = bubbles.Pipeline()
-p.source_object("csv_source", resource=URL,infer_fields=True)
-p.field_filter(keep=["Project Number","Country"])
-
-
-# We create a table
-# Uncomment this line and see the difference in debug messages
-#p.create("target", "data")
-
-#p.distinct("Category")
-p.pretty_print()
-p.run()
-
+def project_browser():
+    
+    projects_raw = fromcsv(csvfiles['cida-project-browser'],skip)
+    projects = skip(projects_raw,1)
+    # Now we have to rename 'Project Number' field to 'Project number' so we can do a join
+    
+    #print look(projects)
+    hdps2012 = fromcsv(data['hdps-2012'])
+    pprint(header(projects))
+    pprint(header(hdps2012))
+    t1,t2 = diffheaders(projects,hdps2012)
+    both = join(projects, hdps2012, key='Project number')
+    print look(both)
+    
+    #print h1
+    #print look(hdps2012)
