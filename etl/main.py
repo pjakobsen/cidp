@@ -8,18 +8,19 @@ Created by Peder Jakobsen on 2013-11-05.
 import sys  
 from petl import *
 from petl.fluent import etl
-import urllib2
-from pprint import pprint
-import simplejson as json
-from data_sources import datadir, cida, iati_registry
 
 
+datadir="/Users/peder/dev/cidp/";
+cida = { "cida-project-browser":datadir+"Project Browser English.csv",
+         "hdps-2012":datadir+"HPDS-2011-2012-eng.csv",
+         "hdps-2011":datadir+"HPDS-2010-2011-eng.csv",
+         "hdps-2010":datadir+"HPDS-2009-2010-eng.csv",
+         "hdps-2009":datadir+"HPDS-2008-2009-eng.csv",
+         "hdps-2008":datadir+"HPDS-2007-2008-eng.csv"}
 
-
-    
 def cida():
     
-    projects_raw = fromcsv(data['cida-project-browser'],skip)
+    projects_raw = fromcsv(cida['cida-project-browser'],skip)
     projects = skip(projects_raw,1)
     # Now we have to rename 'Project Number' field to 'Project number' so we can do a join
     
@@ -35,8 +36,7 @@ def cida():
     #print look(hdps2012)
 
 if __name__ == '__main__':
-    	
-	download_iati_metadata()
+    cida()
 
 	
 
