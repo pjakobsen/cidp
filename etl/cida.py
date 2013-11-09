@@ -1,4 +1,5 @@
 import sys  
+from pprint import pprint
 from petl import *
 from petl.fluent import etl
 
@@ -12,17 +13,23 @@ csvfiles = { "cida-project-browser":datadir+"Project Browser English.csv",
 
 def project_browser():
     
-    projects_raw = fromcsv(csvfiles['cida-project-browser'],skip)
-    projects = skip(projects_raw,1)
+    rawfile = fromcsv(csvfiles['cida-project-browser'])
+
+    projects=skip(rawfile,1)
     # Now we have to rename 'Project Number' field to 'Project number' so we can do a join
-    
-    #print look(projects)
-    hdps2012 = fromcsv(data['hdps-2012'])
+    projects = rename(projects,'Project Number','Project number')
     pprint(header(projects))
-    pprint(header(hdps2012))
+    projects = cut(projects,"Project number","Title",'Start','End')
+    print look(projects)
+    print "------------- HDPS ----------------"
+    hdps2012 = fromcsv(csvfiles['hdps-2012'])
+    hdps2012 = cut(projects,"Project number","Title",'Start',"End")
+    print look(hdps2012)
+    sys.exit()
     t1,t2 = diffheaders(projects,hdps2012)
-    both = join(projects, hdps2012, key='Project number')
-    print look(both)
-    
+    joined = join(projects, hdps2012, key='Project number')
+    print look(joined)
+    pprint(header(joined))
+    #tocsv(joined, datadir+'test.csv')
     #print h1
     #print look(hdps2012)
