@@ -11,20 +11,8 @@ csvfiles = { "browser":datadir+"Project Browser English.csv",
          "hdps-2009":datadir+"HPDS-2008-2009-eng.csv",
          "hdps-2008":datadir+"HPDS-2007-2008-eng.csv"}
 
-fields = ['Fiscal year',
-          'Project number',
-          'Status',
-          'Maximum CIDA contribution (project-level)',
-          'Organisation name',
-          'Continent name',
-          'Project Browser country ID',
-          'Country/region name',
-          'Country/region percent',
-          'Sector name',
-          'Sector percent',
-          'Amount spent']
          
-fields_rename=  {'Fiscal year':'year',
+fieldmap=  {'Fiscal year':'year',
                     'Project number':'project',
                     'Status':'status',
                     'Maximum CIDA contribution (project-level)':'cida_contrib',
@@ -34,20 +22,31 @@ fields_rename=  {'Fiscal year':'year',
                     'Country/region name':'region',
                     'Country/region percent':'region_percent',
                     'Sector name':'sector',
+                    'Sector ID':'sector_id',
                     'Sector percent':'sector_percent',
                     'Amount spent':'amount'}
 
 def combine_hdps():
+    pprint (header(fromcsv(csvfiles['hdps-2012'])))
+    #sys.exit()
+    # Utility for cleaning up tables
     def cutem(key,value):
         c = fromcsv(value)
-        c = cut(c,fields)
-        c = rename(c,fields_rename)
+        # some fiels have the date in the first line which needs to be skipped
+        if "Date created" in "".join(header(c)):
+            c = skip(c,1)     
+        c = cut(c,fieldmap.keys())
+        c = rename(c,fieldmap)
         return key,c
         
     # Turn file locations into petl.io.CSVView objects
     csv=dict(cutem(key,value) for key, value in csvfiles.items())
-    pprint(csv)
+
     print look(csv['hdps-2012'])
+    print look(csv['hdps-2011'])
+    merged = mergesort(csv['hdps-2012'], csv['hdps-2011'], key='project')
+    print "-----------"
+    print look(merged)
     
     
 
