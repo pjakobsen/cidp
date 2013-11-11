@@ -32,7 +32,7 @@ fieldmap = {'Fiscal year': 'year',
  'Sector percent': 'sector_percent',
  'Amount spent': 'amount'}
 
-def combine_hdps():
+def combine_hpds():
     pprint(header(fromcsv(csvfiles['hdps-2012'])))
 
     def cutem(key, value):
@@ -41,11 +41,12 @@ def combine_hdps():
             c = skip(c, 1)
         c = cut(c, fieldmap.keys())
         c = rename(c, fieldmap)
-        c = convert(c, 'year', {'2011/2012': '2012',
-         '2010/2011': '2011',
-         '2009/2010': '2010',
-         '2008/2009': '2009',
-         '2008/2007': '2008'})
+        c = convert(c, 'year', {
+         '2011/2012': 2012,
+         '2010/2011': 2011,
+         '2009/2010': 2010,
+         '2008/2009': 2009,
+         '2007/2008': 2008})
         return (key, c)
 
     csv = dict((cutem(key, value) for key, value in csvfiles.items()))
@@ -59,7 +60,7 @@ def setup_db():
 
 
 def project_browser():
-    rawfile = fromcsv(csvfiles['cida-project-browser'])
+    rawfile = fromcsv(csvfiles['browser'])
     projects = skip(rawfile, 1)
     projects = rename(projects, 'Project Number', 'Project number')
     pprint(header(projects))
@@ -132,7 +133,52 @@ def load_postrges():
     
     todb(table, con, table_name)
 
-def main():
+def simple_merge():
+    '''
+    Create a very simple CSV file that only has most essential fields from 3 sources:
+    IATI
+    PB
+    Merged HPDS
+    '''
     
-    load_postrges()
+    
+    # Project Browswer
+    a = fromcsv(csvfiles['browser'])
+    a = skip(a,1)
+    b = rename(a, 'Project Number', 'project')
+    b = rename(b, 'Maximum CIDA Contribution','amount')
+    b = rename(b, 'End','year')
+
+    pb = cut(b, 'project','amount','year')
+    pb = addfield(pb, 'source', "PB")
+    pb =convert(pb, 'year', int)
+    pb =convert(pb, 'amount', float)
+    #print look(pb)
+    # Merged historical
+    m = fromcsv(datadir+'merged.csv')
+
+    h=cut(m, 'project','amount','year')
+    h =convert(h, 'year', int)
+    h =convert(h, 'amount', float)
+    hist = addfield(h, 'source', "HPDS")
+    #print look(hist)
+    merged= mergesort(pb, hist, key='project')
+    print look(merged)
+    tocsv(merged, datadir+"minimerge.csv")
+    
+
+def compare_headers():
+    pb = skip(fromcsv(csvfiles['browser']),1)
+    pb = header(rename(pb, 'Project Number', 'Project number'))
+    hdps = header(skip(fromcsv(csvfiles['hdps-2012']),0))
+    pprint(pb)
+    pprint(hdps)
+    s = set(pb).intersection(set(hdps) )
+    pprint(s)
+
+def main():
+    simple_merge()
+    #combine_hpds()
+    #compare_headers()
+    #load_postrges()
 
