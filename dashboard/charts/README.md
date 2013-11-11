@@ -1,1 +1,5 @@
-Put chart code here
+Running the charts
+------------------
+
+Open index.html in a browser
+

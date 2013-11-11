@@ -28,7 +28,6 @@ fieldmap=  {'Fiscal year':'year',
 
 def combine_hdps():
     pprint (header(fromcsv(csvfiles['hdps-2012'])))
-    #sys.exit()
     # Utility for cleaning up tables
     def cutem(key,value):
         c = fromcsv(value)
@@ -37,18 +36,23 @@ def combine_hdps():
             c = skip(c,1)     
         c = cut(c,fieldmap.keys())
         c = rename(c,fieldmap)
+        # TODO: This has to generic change for every file
+        c = convert(c, 'year',{ '2011/2012':'2012',
+                                '2010/2011':'2011',
+                                '2009/2010':'2010',
+                                '2008/2009':'2009',
+                                '2008/2007':'2008',
+                                })
         return key,c
         
     # Turn file locations into petl.io.CSVView objects
     csv=dict(cutem(key,value) for key, value in csvfiles.items())
+    merged = mergesort(csv['hdps-2012'], csv['hdps-2011'],csv['hdps-2010'],csv['hdps-2009'],csv['hdps-2008'], key='project')
+    print rowcount(merged)
+    #tocsv(rowslice(merged,400), datadir+'test.csv')
+    tocsv(rowslice(merged), datadir+'merged.csv')
+    
 
-    print look(csv['hdps-2012'])
-    print look(csv['hdps-2011'])
-    merged = mergesort(csv['hdps-2012'], csv['hdps-2011'], key='project')
-    print "-----------"
-    print look(merged)
-    
-    
 
 def project_browser():
     
@@ -67,7 +71,7 @@ def project_browser():
     sys.exit()
     t1,t2 = diffheaders(projects,hdps2012)
     joined = join(projects, hdps2012, key='Project number')
-    print look(joined)
+    print look(joined,30)
     pprint(header(joined))
     #tocsv(joined, datadir+'test.csv')
     #print h1
