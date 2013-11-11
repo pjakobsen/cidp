@@ -6,6 +6,15 @@ Usage
 
 python main.py
 
+Postgres Problems on OS X?
+
+virtualenv your_virtual_env_name
+. your_virtual_env_name/bin/activate
+export ARCHFLAGS="-arch i386 -arch x86_64"
+export PATH=$PATH:/Library/PostgreSQL/9.1/bin
+pip install psycopg2
+
+
 Data Sources
 ------------
 
