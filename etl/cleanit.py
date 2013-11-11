@@ -4,3 +4,4 @@ f=open('links.csv')
 #for line in f.readlines():    print line
 print line.split("&usd")
 print line.split("&usd")[0]
+#this comment added on GitHub
