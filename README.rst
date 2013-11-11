@@ -1,6 +1,4 @@
-﻿Hello
-
-Canadian International Development Platform
+﻿Canadian International Development Platform
 -------------------------------------------
 
 Team
