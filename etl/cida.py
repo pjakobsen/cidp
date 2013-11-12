@@ -11,13 +11,18 @@ from petl import *
 from petl.fluent import etl
 #import sqlite3
 import psycopg2
+from bs4 import BeautifulSoup
+from urllib2 import urlopen
+
 datadir = '/Users/peder/dev/cidp/'
 csvfiles = {'browser': datadir + 'Project Browser English.csv',
  'hdps-2012': datadir + 'HPDS-2011-2012-eng.csv',
  'hdps-2011': datadir + 'HPDS-2010-2011-eng.csv',
  'hdps-2010': datadir + 'HPDS-2009-2010-eng.csv',
  'hdps-2009': datadir + 'HPDS-2008-2009-eng.csv',
- 'hdps-2008': datadir + 'HPDS-2007-2008-eng.csv'}
+ 'hdps-2008': datadir + 'HPDS-2007-2008-eng.csv',
+ 'hdps-2007': datadir + 'HPDS-2006-2007-eng.csv',
+ 'hdps-2006': datadir + 'HPDS-2005-2006-eng.csv'}
 fieldmap = {'Fiscal year': 'year',
  'Project number': 'project',
  'Status': 'status',
@@ -46,11 +51,13 @@ def combine_hpds():
          '2010/2011': 2011,
          '2009/2010': 2010,
          '2008/2009': 2009,
-         '2007/2008': 2008})
+         '2007/2008': 2008,
+         '2006/2007': 2007,
+         '2005/2006': 2006})
         return (key, c)
 
     csv = dict((cutem(key, value) for key, value in csvfiles.items()))
-    merged = mergesort(csv['hdps-2012'], csv['hdps-2011'], csv['hdps-2010'], csv['hdps-2009'], csv['hdps-2008'], key='project')
+    merged = mergesort(csv['hdps-2012'], csv['hdps-2011'], csv['hdps-2010'], csv['hdps-2009'], csv['hdps-2008'],csv['hdps-2007'],csv['hdps-2006'], key='project')
     print rowcount(merged)
     tocsv(rowslice(merged), datadir + 'merged.csv')
 
@@ -163,10 +170,31 @@ def simple_merge():
     hist = addfield(h, 'source', "HPDS")
     #print look(hist)
     merged= mergesort(pb, hist, key='project')
-    print look(merged)
+    print rowcount(merged)
+    #print look(merged)
     tocsv(merged, datadir+"minimerge.csv")
-    
+  
+BASE_URL = "http://www.acdi-cida.gc.ca/cidaweb/cpo.nsf/vWebProjSearchEn/"
 
+def scrape_project_profile(ids):
+  
+        url = BASE_URL + ids
+        html = urlopen(url).read()
+        soup = BeautifulSoup(html, "lxml")
+        csvlink = soup.find("a", "button_surrogate")['href']
+        return csvlink
+        #category_links = [BASE_URL + dd.a["href"] for dd in boccat.findAll("dd")]
+        #return category_links
+ 
+def scrape():
+    f = open("MNCH.ids")
+    
+    for i in f.readlines():
+        l = scrape_project_profile(i)
+        print l
+    
+     
+    
 def compare_headers():
     pb = skip(fromcsv(csvfiles['browser']),1)
     pb = header(rename(pb, 'Project Number', 'Project number'))
@@ -177,7 +205,8 @@ def compare_headers():
     pprint(s)
 
 def main():
-    simple_merge()
+    scrape()
+    #simple_merge()
     #combine_hpds()
     #compare_headers()
     #load_postrges()

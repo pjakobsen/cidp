@@ -1,4 +1,7 @@
-datadir = "C:\\temp\\"
+import os
+
+
+datadir = os.path.normpath("/temp")
 f=open('C:\\temp\\links.csv','r')
 o=open(datadir+"cleaned.csv", "w")
 lines = f.readlines()
