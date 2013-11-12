@@ -195,7 +195,7 @@ def scrape_mnhc():
         l = scrape_project_profile(i)
         i = parse_qs(urlparse(l).query)
         # we only want the id
-        o.write(str(i['wbs_number'])+"\n")
+        o.write(str(i['wbs_number'][0])+"\n")
     o.close()
     
      
@@ -214,27 +214,25 @@ def mnhc_report():
     with open(datadir+'minimerge.csv') as f: 
         f.readline()
         for line in f:
+            line = line.rstrip("\n")
             l = line.split(',')
-            d[l[0]]=l[1]
+            d[l[0]]={'amount':l[1],'year':l[2], 'source':l[3].rstrip("\r")}
             
         
     # with open(datadir+'minimerge.csv') as f:
     #     f.readline() # ignore first line (header)
     #     data = dict(csv.reader(f, delimiter=','))
-
      
     f = open("MNCH-project.ids",'r')
      
     for line in f:
-        id = line
+        id = line.split("\n")[0]
         print id
-        #print d[line]
-        
-         
+        print d[id]
 
 def main():
-    #mnhc_report()
-    scrape_mnhc()
+    mnhc_report()
+    #scrape_mnhc()
     #simple_merge()
     #combine_hpds()
     #compare_headers()
