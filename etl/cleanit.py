@@ -1,7 +1,13 @@
-f=open('links.csv')
-#content=f.read()
-#print content
-#for line in f.readlines():    print line
-print line.split("&usd")
-print line.split("&usd")[0]
-#this comment added on GitHub
+datadir = "C:\\temp\\"
+f=open('C:\\temp\\links.csv','r')
+o=open(datadir+"cleaned.csv", "w")
+lines = f.readlines()
+for line in lines:
+	#o.write(line.split("&usd")[0] + "\n")
+	mycleanedline = line.split("&usd")[0]
+	o.write(mycleanedline + "\n")
+o.close()
+
+
+	
+
