@@ -150,12 +150,9 @@ def simple_merge():
     Merged HPDS
     '''
     
-    
     # Project Browswer
     a = fromcsv(csvfiles['browser'])
     a = skip(a,1)
-
-    
     b = rename(a, 'Project Number', 'project')
     b = rename(b, 'Maximum CIDA Contribution','amount')
     b = convert(b,'amount', 'replace', '$ ', '') # Get rid of the dollar sign
@@ -165,7 +162,6 @@ def simple_merge():
     pb = addfield(pb, 'source', "PB")
     pb =convert(pb, 'year', int)
     pb =convert(pb, 'amount', float)
-
     m = fromcsv(datadir+'merged.csv')
     h=cut(m, 'project','amount','year')
     h =convert(h, 'year', int)
@@ -197,9 +193,7 @@ def scrape_mnhc():
         # we only want the id
         o.write(str(i['wbs_number'][0])+"\n")
     o.close()
-    
-     
-    
+
 def compare_headers():
     pb = skip(fromcsv(csvfiles['browser']),1)
     pb = header(rename(pb, 'Project Number', 'Project number'))
@@ -211,28 +205,37 @@ def compare_headers():
     
 def mnhc_report():
     d={}
+    data=[]
     with open(datadir+'minimerge.csv') as f: 
         f.readline()
         for line in f:
-            line = line.rstrip("\n")
+            line = line.rstrip("\n\r")
             l = line.split(',')
+            #l = tuple(line.split(','))
+            #             data.append(l)
             d[l[0]]={'amount':l[1],'year':l[2], 'source':l[3].rstrip("\r")}
-            
-        
-    # with open(datadir+'minimerge.csv') as f:
-    #     f.readline() # ignore first line (header)
-    #     data = dict(csv.reader(f, delimiter=','))
-     
+    
+    
     f = open("MNCH-project.ids",'r')
-     
+    
+    data={}
     for line in f:
+        id = line
         id = line.split("\n")[0]
-        print id
-        print d[id]
+        
+        data[id]=d[id]
+    
+    print len(set(data))
+    print len(data.keys())
+    for key, value in data.iteritems():
+        print key, value
+
+   
+
 
 def main():
-    mnhc_report()
-    #scrape_mnhc()
+    #mnhc_report()
+    scrape_mnhc()
     #simple_merge()
     #combine_hpds()
     #compare_headers()
