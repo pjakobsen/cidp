@@ -6,6 +6,7 @@ Created by Peder Jakobsen on 2013-11-05.
 
 """
 import sys
+import csv
 from pprint import pprint
 from petl import *
 from petl.fluent import etl
@@ -13,6 +14,7 @@ from petl.fluent import etl
 import psycopg2
 from bs4 import BeautifulSoup
 from urllib2 import urlopen
+from urlparse import urlparse, parse_qs
 
 datadir = '/Users/peder/dev/cidp/'
 csvfiles = {'browser': datadir + 'Project Browser English.csv',
@@ -152,26 +154,26 @@ def simple_merge():
     # Project Browswer
     a = fromcsv(csvfiles['browser'])
     a = skip(a,1)
+
+    
     b = rename(a, 'Project Number', 'project')
     b = rename(b, 'Maximum CIDA Contribution','amount')
+    b = convert(b,'amount', 'replace', '$ ', '') # Get rid of the dollar sign
+    b = convert(b,'amount', 'replace', ',', '') # Get rid of commas
     b = rename(b, 'End','year')
-
     pb = cut(b, 'project','amount','year')
     pb = addfield(pb, 'source', "PB")
     pb =convert(pb, 'year', int)
     pb =convert(pb, 'amount', float)
-    #print look(pb)
-    # Merged historical
-    m = fromcsv(datadir+'merged.csv')
 
+    m = fromcsv(datadir+'merged.csv')
     h=cut(m, 'project','amount','year')
     h =convert(h, 'year', int)
     h =convert(h, 'amount', float)
     hist = addfield(h, 'source', "HPDS")
-    #print look(hist)
     merged= mergesort(pb, hist, key='project')
     print rowcount(merged)
-    #print look(merged)
+    print look(merged)
     tocsv(merged, datadir+"minimerge.csv")
   
 BASE_URL = "http://www.acdi-cida.gc.ca/cidaweb/cpo.nsf/vWebProjSearchEn/"
@@ -186,12 +188,15 @@ def scrape_project_profile(ids):
         #category_links = [BASE_URL + dd.a["href"] for dd in boccat.findAll("dd")]
         #return category_links
  
-def scrape():
-    f = open("MNCH.ids")
-    
+def scrape_mnhc():
+    f = open("MNCH-raw.ids")
+    o = open("MNCH-project.ids",'w')
     for i in f.readlines():
         l = scrape_project_profile(i)
-        print l
+        i = parse_qs(urlparse(l).query)
+        # we only want the id
+        o.write(str(i['wbs_number'])+"\n")
+    o.close()
     
      
     
@@ -203,9 +208,33 @@ def compare_headers():
     pprint(hdps)
     s = set(pb).intersection(set(hdps) )
     pprint(s)
+    
+def mnhc_report():
+    d={}
+    with open(datadir+'minimerge.csv') as f: 
+        f.readline()
+        for line in f:
+            l = line.split(',')
+            d[l[0]]=l[1]
+            
+        
+    # with open(datadir+'minimerge.csv') as f:
+    #     f.readline() # ignore first line (header)
+    #     data = dict(csv.reader(f, delimiter=','))
+
+     
+    f = open("MNCH-project.ids",'r')
+     
+    for line in f:
+        id = line
+        print id
+        #print d[line]
+        
+         
 
 def main():
-    scrape()
+    #mnhc_report()
+    scrape_mnhc()
     #simple_merge()
     #combine_hpds()
     #compare_headers()
