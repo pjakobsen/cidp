@@ -228,15 +228,19 @@ def mnhc_totals():
 
 def mnhc_report():
     totals = fromcsv(datadir+"mnhc-totals.csv")
+    totals = rename(totals, 'key', 'project')
+    totals = rename(totals, 'value', 'Affected Amount')
     browser = fromcsv(csvfiles['browser'])
     browser = skip(browser, 1)
     browser = rename(browser, 'Project Number', 'project')
     pb = cut(browser, 'project','Title','Maximum CIDA Contribution')
-    print look(pb)
+    #print look(pb)
     #print look(totals)
-    data =  iterdata(totals)
-    for project,amount in data:
-        print project, round(float(amount))
+    report = join(pb,totals,key="project")
+    report = convert(report,'Maximum CIDA Contribution', 'replace', '$ ', '') # Get rid of the dollar sign
+    report = convert(report,'Maximum CIDA Contribution', 'replace', ',', '')
+    print look(report)
+    tocsv(report, datadir+"mnhc-report.csv")   
 
 def main():
     a = fromcsv(csvfiles['hdps-2012'])
