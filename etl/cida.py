@@ -15,6 +15,7 @@ import psycopg2
 from bs4 import BeautifulSoup
 from urllib2 import urlopen
 from urlparse import urlparse, parse_qs
+from petl.fluent import etl
 
 datadir = '/Users/peder/dev/cidp/'
 csvfiles = {'browser': datadir + 'Project Browser English.csv',
@@ -157,12 +158,15 @@ def simple_merge():
     b = rename(b, 'Maximum CIDA Contribution','amount')
     b = convert(b,'amount', 'replace', '$ ', '') # Get rid of the dollar sign
     b = convert(b,'amount', 'replace', ',', '') # Get rid of commas
+    # try the above with the rowmapper function
     b = rename(b, 'End','year')
     pb = cut(b, 'project','amount','year')
     pb = addfield(pb, 'source', "PB")
     pb =convert(pb, 'year', int)
     pb =convert(pb, 'amount', float)
     m = fromcsv(datadir+'merged.csv')
+    pprint (header(m))
+    sys.exit()
     h=cut(m, 'project','amount','year')
     h =convert(h, 'year', int)
     h =convert(h, 'amount', float)
@@ -170,19 +174,19 @@ def simple_merge():
     merged= mergesort(pb, hist, key='project')
     print rowcount(merged)
     print look(merged)
-    tocsv(merged, datadir+"minimerge.csv")
+    #tocsv(merged, datadir+"minimerge.csv")
   
 BASE_URL = "http://www.acdi-cida.gc.ca/cidaweb/cpo.nsf/vWebProjSearchEn/"
 
 def scrape_project_profile(ids):
   
-        url = BASE_URL + ids
-        html = urlopen(url).read()
-        soup = BeautifulSoup(html, "lxml")
-        csvlink = soup.find("a", "button_surrogate")['href']
-        return csvlink
-        #category_links = [BASE_URL + dd.a["href"] for dd in boccat.findAll("dd")]
-        #return category_links
+    url = BASE_URL + ids
+    html = urlopen(url).read()
+    soup = BeautifulSoup(html, "lxml")
+    csvlink = soup.find("a", "button_surrogate")['href']
+    return csvlink
+    #category_links = [BASE_URL + dd.a["href"] for dd in boccat.findAll("dd")]
+    #return category_links
  
 def scrape_mnhc():
     f = open("MNCH-raw.ids")
@@ -203,39 +207,44 @@ def compare_headers():
     s = set(pb).intersection(set(hdps) )
     pprint(s)
     
-def mnhc_report():
-    d={}
+def mnhc_totals():
     data=[]
-    with open(datadir+'minimerge.csv') as f: 
-        f.readline()
-        for line in f:
-            line = line.rstrip("\n\r")
-            l = line.split(',')
-            #l = tuple(line.split(','))
-            #             data.append(l)
-            d[l[0]]={'amount':l[1],'year':l[2], 'source':l[3].rstrip("\r")}
-    
     
     f = open("MNCH-project.ids",'r')
-    
-    data={}
-    for line in f:
-        id = line
-        id = line.split("\n")[0]
-        
-        data[id]=d[id]
-    
-    print len(set(data))
-    print len(data.keys())
-    for key, value in data.iteritems():
-        print key, value
+    # Should come from a pickle
+    mnhc_ids = [line.rstrip("\n") for line in f.readlines()] 
+    cida_tbl=fromcsv(datadir+"merged.csv")
 
-   
+    # grab only ids that are in the mnhc_ids
+    t = select(cida_tbl, lambda rec: rec[6] in mnhc_ids)
+    table =convert(t, 'amount', float)
 
+    print look(table)
+    print nrows(table)
+    table1 =  aggregate(table, 'project', sum, 'amount')
+    print nrows(table1)
+    print look(table1)
+    tocsv(table1, datadir+"mnhc-totals.csv")   
+
+def mnhc_report():
+    totals = fromcsv(datadir+"mnhc-totals.csv")
+    browser = fromcsv(csvfiles['browser'])
+    browser = skip(browser, 1)
+    browser = rename(browser, 'Project Number', 'project')
+    pb = cut(browser, 'project','Title','Maximum CIDA Contribution')
+    print look(pb)
+    #print look(totals)
+    data =  iterdata(totals)
+    for project,amount in data:
+        print project, round(float(amount))
 
 def main():
-    #mnhc_report()
-    scrape_mnhc()
+    a = fromcsv(csvfiles['hdps-2012'])
+    #xa = skip(a,1)
+    #pprint(header(a))
+    #mnhc_totals()
+    mnhc_report()
+    #scrape_mnhc()
     #simple_merge()
     #combine_hpds()
     #compare_headers()
