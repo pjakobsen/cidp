@@ -124,11 +124,23 @@ def load_sqlite_db():
     todb(table, conn, table_name)
 
 def load_postrges():
-    #'id INT PRIMARY KEY',
+    '''
+    Set up DB to run queries like:
+    
+    Currently running queries such as this:
+
+    SELECT SUM(amount)  FROM projects where project = ‘M013354001’
+    150,000,000
+
+    SELECT SUM(amount)  FROM projects where project = ‘M013354002’
+    70,000,000
+
+    SELECT SUM(amount)  FROM projects where project like 'M01335400%'
+    220,000,000
+    '''
     
     fields = [    
                   'project_id serial primary key',
-                  'title VARCHAR(100)',
                   'year INT',
                   'amount FLOAT',
                   'continent VARCHAR(20)',
@@ -141,9 +153,27 @@ def load_postrges():
                   'region_percent VARCHAR(10)',
                   'sector VARCHAR(100)',
                   'sector_id VARCHAR(10)',
-                  'sector_percent VARCHAR(10)'
+                  'sector_percent VARCHAR(10)',
+                  'browser_title VARCHAR(200)',
+                  # 'browser_start_date  VARCHAR(100)',
+                  # 'browser_end_date VARCHAR(100)'
                    ]
-    table = fromcsv(datadir + 'merged.csv')
+    table = fromcsv(datadir + 'joined.csv')
+    table = rename(table, 'Title', 'browser_title')
+    # table = rename(table, 'Start', 'browser_start_date')
+    # table = rename(table, 'End', 'browser_end_date')
+    table = cutout(table,"Start")
+    table = cutout(table, "End")
+    pprint(header(table))
+    # remove rows without title
+    table = select(table, 'browser_title', lambda v: v != '')
+    table = select(table, 'amount', lambda v: v != '')
+    for d in iterdata(table,0,10000):
+        if d[13]: print d
+        
+    print(look(tail(table)))
+    
+    
     table_name = 'projects'
     try:
         con = psycopg2.connect(database='crs', user='peder') 
@@ -158,10 +188,15 @@ def load_postrges():
         cur.execute(sql)
         con.commit()
         print ver
+        todb(table, con, table_name)
+        print "-------------- Load OK: Testing one record -------------"
+        cur.execute('SELECT * from projects where project_id=10000')
+        r = cur.fetchone()
+        print r
     except:
         raise
     
-    todb(table, con, table_name)
+    
 
 def simple_merge():
     '''
@@ -210,11 +245,7 @@ def compare_headers():
 
 
 def main():
-    combine_hpds()
-    sys.exit()
-    a = fromcsv(csvfiles['hdps-2012'])
-    #a = skip(a,1)
-    pprint(header(a))
+
 
     load_postrges()
 
