@@ -10,11 +10,8 @@ import csv
 from pprint import pprint
 from petl import *
 from petl.fluent import etl
-#import sqlite3
+import sqlite3
 import psycopg2
-from bs4 import BeautifulSoup
-from urllib2 import urlopen
-from urlparse import urlparse, parse_qs
 from petl.fluent import etl
 
 datadir = '/Users/peder/dev/cidp/'
@@ -40,6 +37,26 @@ fieldmap = {'Fiscal year': 'year',
  'Sector percent': 'sector_percent',
  'Amount spent': 'amount'}
 
+
+def project_browser():
+     rawfile = fromcsv(csvfiles['browser'])
+     projects = skip(rawfile, 1)
+     projects = rename(projects, 'Project Number', 'project')
+     pprint(header(projects))
+     projects = cut(projects, 'project', 'Title', 'Start', 'End')
+     return projects
+     # print look(projects)
+     #    print '------------- HDPS ----------------'
+     #    hdps2012 = fromcsv(csvfiles['hdps-2012'])
+     #    hdps2012 = cut(projects, 'Project number', 'Title', 'Start', 'End')
+     #    print look(hdps2012)
+     #    
+     #    t1, t2 = diffheaders(projects, hdps2012)
+     #    joined = join(projects, hdps2012, key='Project number')
+     #    print look(joined, 30)
+     #    pprint(header(joined))
+
+
 def combine_hpds():
     pprint(header(fromcsv(csvfiles['hdps-2012'])))
 
@@ -60,35 +77,34 @@ def combine_hpds():
         return (key, c)
 
     csv = dict((cutem(key, value) for key, value in csvfiles.items()))
-    merged = mergesort(csv['hdps-2012'], csv['hdps-2011'], csv['hdps-2010'], csv['hdps-2009'], csv['hdps-2008'],csv['hdps-2007'],csv['hdps-2006'], key='project')
+    
+    merged = mergesort(csv['hdps-2012'], 
+                         csv['hdps-2011'], 
+                         csv['hdps-2010'], 
+                         csv['hdps-2009'],           
+                         csv['hdps-2008'],
+                         csv['hdps-2007'],
+                         csv['hdps-2006'], 
+                        key='project')
+    
+   
+    # Need to get title from Project browser
+    # Count should be the same after performing this operation
     print rowcount(merged)
-    tocsv(rowslice(merged), datadir + 'merged.csv')
+    browser = project_browser()
+    joined = outerjoin(merged, browser, key="project")
+    print rowcount(joined)
+    print look(joined)
+    tocsv(rowslice(joined), datadir + 'joined.csv')
 
-
-def setup_db():
-    pass
-
-
-def project_browser():
-    rawfile = fromcsv(csvfiles['browser'])
-    projects = skip(rawfile, 1)
-    projects = rename(projects, 'Project Number', 'Project number')
-    pprint(header(projects))
-    projects = cut(projects, 'Project number', 'Title', 'Start', 'End')
-    print look(projects)
-    print '------------- HDPS ----------------'
-    hdps2012 = fromcsv(csvfiles['hdps-2012'])
-    hdps2012 = cut(projects, 'Project number', 'Title', 'Start', 'End')
-    print look(hdps2012)
-    sys.exit()
-    t1, t2 = diffheaders(projects, hdps2012)
-    joined = join(projects, hdps2012, key='Project number')
-    print look(joined, 30)
-    pprint(header(joined))
-
+def project_id_sets():
+    browser = project_browser()
+    print rowcount(browser)
+    print rowcount(unique(browser,'project'))
+    
 
 def load_sqlite_db():
-    
+    ''' SQLite chokes on the character sets in the data, use Postgres instead'''
     fields = ','.join(fieldmap.values())
     print fields
     
@@ -108,27 +124,31 @@ def load_sqlite_db():
     todb(table, conn, table_name)
 
 def load_postrges():
-    fields = ['id INT PRIMARY KEY',
+    #'id INT PRIMARY KEY',
+    
+    fields = [    
+                  'project_id serial primary key',
+                  'title VARCHAR(100)',
                   'year INT',
+                  'amount FLOAT',
                   'continent VARCHAR(20)',
                   'cida_contrib VARCHAR(20)',
-                  'org VARCHAR(20)',
+                  'org VARCHAR(100)',
                   'status VARCHAR(20)',
                   'br_country_id VARCHAR(20)',
-                  'region VARCHAR(20)',
-                  'project VARCHAR(210)',
-                  'region_percent VARCHAR(20)',
-                  'sector VARCHAR(20)',
-                   'sector_id VARCHAR(20)',
-                   'sector_percent VARCHAR(20)',
-                   'amount FLOAT'
+                  'region VARCHAR(50)',
+                  'project VARCHAR(10)',
+                  'region_percent VARCHAR(10)',
+                  'sector VARCHAR(100)',
+                  'sector_id VARCHAR(10)',
+                  'sector_percent VARCHAR(10)'
                    ]
     table = fromcsv(datadir + 'merged.csv')
     table_name = 'projects'
     try:
         con = psycopg2.connect(database='crs', user='peder') 
         cur = con.cursor()
-        
+        cur.execute("SET CLIENT_ENCODING TO 'iso-8859-1'")
         cur.execute('DROP TABLE projects')
         sql = 'CREATE TABLE {} ({})'.format(table_name, ",".join(fields))
         cur.execute('SELECT version()')  
@@ -171,12 +191,10 @@ def simple_merge():
     h =convert(h, 'year', int)
     h =convert(h, 'amount', float)
     hist = addfield(h, 'source', "HPDS")
-    merged= mergesort(pb, hist, key='project')
+    merged = mergesort(pb, hist, key='project')
     print rowcount(merged)
     print look(merged)
     #tocsv(merged, datadir+"minimerge.csv")
-  
-
 
 def compare_headers():
     pb = skip(fromcsv(csvfiles['browser']),1)
@@ -192,14 +210,11 @@ def compare_headers():
 
 
 def main():
+    combine_hpds()
+    sys.exit()
     a = fromcsv(csvfiles['hdps-2012'])
-    #xa = skip(a,1)
-    #pprint(header(a))
-    #mnhc_totals()
-    mnhc_report()
-    #scrape_mnhc()
-    #simple_merge()
-    #combine_hpds()
-    #compare_headers()
-    #load_postrges()
+    #a = skip(a,1)
+    pprint(header(a))
+
+    load_postrges()
 
