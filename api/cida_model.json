@@ -1,0 +1,28 @@
+{
+    "dimensions": [
+		{"name":"year"},
+		{"name":"project"},
+        {"name":"amount"},
+		{"name":"continent"},
+		{"name":"sector"},
+		{"name":"status"},
+		{"name":"region"},
+		{"name":"org"},
+		{"name":"browser_title"}
+    ],
+
+    "cubes": [
+        {
+            "name": "projects",
+            "dimensions": ["project", "year","amount", "continent","sector"],
+			"measures": [
+				{"name":"amount",
+				 "label":"Amount Spent",
+				 "aggregations":["sum"]
+				}
+			
+			]
+
+        }
+    ]
+}
