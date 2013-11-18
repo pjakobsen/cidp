@@ -14,15 +14,15 @@ import sqlite3
 import psycopg2
 from petl.fluent import etl
 
-datadir = '/Users/peder/dev/cidp/'
-csvfiles = {'browser': datadir + 'Project Browser English.csv',
- 'hdps-2012': datadir + 'HPDS-2011-2012-eng.csv',
- 'hdps-2011': datadir + 'HPDS-2010-2011-eng.csv',
- 'hdps-2010': datadir + 'HPDS-2009-2010-eng.csv',
- 'hdps-2009': datadir + 'HPDS-2008-2009-eng.csv',
- 'hdps-2008': datadir + 'HPDS-2007-2008-eng.csv',
- 'hdps-2007': datadir + 'HPDS-2006-2007-eng.csv',
- 'hdps-2006': datadir + 'HPDS-2005-2006-eng.csv'}
+datadir = ''
+csvfiles = {'browser': datadir + 'browser.csv',
+ 'hdps-2012': datadir + 'hpds-2012.csv',
+ 'hdps-2011': datadir + 'hpds-2011.csv',
+ 'hdps-2010': datadir + 'hpds-2010.csv',
+ 'hdps-2009': datadir + 'hpds-2009.csv',
+ 'hdps-2008': datadir + 'hpds-2008.csv',
+ 'hdps-2007': datadir + 'hpds-2007.csv',
+ 'hdps-2006': datadir + 'hpds-2006.csv'}
 fieldmap = {'Fiscal year': 'year',
  'Project number': 'project',
  'Status': 'status',
@@ -246,6 +246,6 @@ def compare_headers():
 
 def main():
 
-
-    load_postrges()
+    combine_hpds()
+    #load_postrges()
 
