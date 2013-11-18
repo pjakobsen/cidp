@@ -1,0 +1,8 @@
+SQLAlchemy==0.8.3
+beautifulsoup4==4.3.2
+cubes==0.10.2
+lxml==3.2.4
+petl==0.17.1
+psycopg2==2.5.1
+simplejson==3.3.1
+wsgiref==0.1.2
