@@ -20,6 +20,7 @@ import cubes
 
 model = cubes.load_model("cida_model.json")
 
+#postgres://jdcqogwzkevwog:8z47cIJBDcBM3mefOiYfPVNBXy@ec2-23-23-177-33.compute-1.amazonaws.com:5432/de652in13m1noa
 ws = cubes.create_workspace("sql",model,url="postgres://localhost/crs")
 
 cube = model.cube("projects")
