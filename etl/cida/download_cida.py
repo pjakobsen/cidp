@@ -30,6 +30,9 @@ print "OK 2009"
 urllib.urlretrieve("http://www.acdi-cida.gc.ca/INET/IMAGES.NSF/vLUImages/Open%20Data/\$file/HPDS-2007-2008-eng.csv","hpds-2008.csv")
 print "OK 2008"
 urllib.urlretrieve("http://www.acdi-cida.gc.ca/INET/IMAGES.NSF/vLUImages/Open%20Data/\$file/HPDS-2006-2007-eng.csv","hpds-2007.csv")
+print "OK 2007"
+
+urllib.urlretrieve("http://www.acdi-cida.gc.ca/INET/IMAGES.NSF/vLUImages/Open%20Data/$file/HPDS-2005-2006-eng.csv", 
+hpds-2006.csv")
+print "OK 2006"
 print "ALL OK"
-
-
