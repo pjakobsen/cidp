@@ -17,8 +17,9 @@ Label Attributes
 '''
 
 import cubes
+from pprint import pprint
 
-model = cubes.load_model("cida_model.json")
+model = cubes.load_model("../cida_model.json")
 
 #postgres://jdcqogwzkevwog:8z47cIJBDcBM3mefOiYfPVNBXy@ec2-23-23-177-33.compute-1.amazonaws.com:5432/de652in13m1noa
 ws = cubes.create_workspace("sql",model,url="postgres://localhost/crs")
@@ -29,8 +30,8 @@ browser = ws.browser(cube)
 
 # result = browser.aggregate(drilldown=["continent"])    
 # result = browser.aggregate(drilldown=["sector"])   
-result = browser.aggregate(drilldown=["project"])   
+result = browser.aggregate(drilldown=["continent"])   
 print result.summary
-print "---------------------"
-for c in result.cells:
-    print c
+print "--------------------"
+conts =  [(c['continent'],round(c['amount_sum'])) for c in result.cells]
+pprint(conts)
