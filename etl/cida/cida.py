@@ -168,7 +168,7 @@ def load_postrges():
     # remove rows without title
     table = select(table, 'browser_title', lambda v: v != '')
     table = select(table, 'amount', lambda v: v != '')
-    for d in iterdata(table,0,10000):
+    for d in iterdata(table,0,1):
         if d[13]: print d
         
     print(look(tail(table)))
@@ -176,31 +176,34 @@ def load_postrges():
     
     table_name = 'projects'
     try:
-        con = psycopg2.connect(database='crs', user='peder') 
+        con = psycopg2.connect(database='cidp_dev', user='cidp') 
         cur = con.cursor()
         cur.execute("SET CLIENT_ENCODING TO 'iso-8859-1'")
-        cur.execute('DROP TABLE projects')
+	try: 
+            cur.execute('DROP TABLE projects')
+        except:
+            pass   	
         sql = 'CREATE TABLE {} ({})'.format(table_name, ",".join(fields))
-        cur.execute('SELECT version()')  
-        print sql
-        
-        ver = cur.fetchone()
-        cur.execute(sql)
-        con.commit()
-        print ver
-        todb(table, con, table_name)
-        print "-------------- Load OK: Testing one record -------------"
-        cur.execute('SELECT * from projects where project_id=10000')
-        r = cur.fetchone()
-        print r
-    except:
-        raise
+        try:
+            cur.execute('SELECT version()')  
+            print cur.fetchone()
+            cur.execute(sql)
+            con.commit()
+            todb(table, con, table_name)
+            print "-------------- Load OK: Testing one record -------------"
+            cur.execute('SELECT * from projects where project_id=10000')
+            r  = cur.fetchone()
+            print r
+        except Exception, e:
+            print e.pgerror
+    except Exception, e:
+        print e.pgerror
+        print e
     
     
 
 def simple_merge():
-    '''
-    Create a very simple CSV file that only has most essential fields from 3 sources:
+    '''    Create a very simple CSV file that only has most essential fields from 3 sources:
     IATI
     PB
     Merged HPDS
@@ -246,6 +249,6 @@ def compare_headers():
 
 def main():
 
-    combine_hpds()
-    #load_postrges()
+    #combine_hpds()
+    load_postrges()
 
