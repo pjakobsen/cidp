@@ -1,1 +1,1 @@
-web: slicer serve slicer.ini
+worker: slicer serve slicer.ini
