@@ -9,7 +9,8 @@ International Aid Transparency Initiative
 
 The IATI Datastore is an online service that gathers all data published to the IATI standard into a single queryable source. This can deliver selections of IATI data in JSON or XML formats, or CSV (spreadsheet) for less-technical users.
 
-http://iatistandard.org/datastore/
+Info:  http://iatistandard.org/datastore/
+API: http://iati-datastore.herokuapp.com/
 
 ----
 Team
