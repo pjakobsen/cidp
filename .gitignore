@@ -2,3 +2,4 @@
 .DS_Store
 *.db
 *.csv
+reports/iati_org_xml/
