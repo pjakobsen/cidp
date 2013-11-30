@@ -14,7 +14,7 @@
     "cubes": [
         {
             "name": "projects",
-            "dimensions": ["project", "year","amount", "continent","sector"],
+            "dimensions": ["project", "year","amount","continent","sector","region"],
 			"measures": [
 				{"name":"amount",
 				 "label":"Amount Spent",
