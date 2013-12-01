@@ -13,6 +13,7 @@ from petl.fluent import etl
 import sqlite3
 import psycopg2
 from petl.fluent import etl
+import ConfigParser
 
 datadir = ''
 csvfiles = {'browser': datadir + 'browser.csv',
@@ -139,25 +140,7 @@ def load_postrges():
     220,000,000
     '''
     
-    fields = [    
-                  'project_id serial primary key',
-                  'year INT',
-                  'amount FLOAT',
-                  'continent VARCHAR(20)',
-                  'cida_contrib VARCHAR(20)',
-                  'org VARCHAR(100)',
-                  'status VARCHAR(20)',
-                  'br_country_id VARCHAR(20)',
-                  'region VARCHAR(50)',
-                  'project VARCHAR(10)',
-                  'region_percent VARCHAR(10)',
-                  'sector VARCHAR(100)',
-                  'sector_id VARCHAR(10)',
-                  'sector_percent VARCHAR(10)',
-                  'browser_title VARCHAR(200)',
-                  # 'browser_start_date  VARCHAR(100)',
-                  # 'browser_end_date VARCHAR(100)'
-                   ]
+    fields = hdps.conf
     table = fromcsv(datadir + 'joined.csv')
     table = rename(table, 'Title', 'browser_title')
     # table = rename(table, 'Start', 'browser_start_date')
