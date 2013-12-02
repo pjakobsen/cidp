@@ -18,7 +18,7 @@
 			"measures": [
 				{"name":"amount",
 				 "label":"Amount Spent",
-				 "aggregations":["sum"]
+				 "aggregations":["sum","min", "max"]
 				}
 			
 			]
