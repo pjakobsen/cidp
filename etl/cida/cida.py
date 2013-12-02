@@ -123,6 +123,13 @@ def load_sqlite_db():
         raise
 
     todb(table, conn, table_name)
+    
+def create_postgres_table():
+    m = fromcsv("data/full_merge.csv")
+    pprint(header(m))
+    print len(header(m))
+    
+    
 
 def load_postrges():
     '''
@@ -217,6 +224,86 @@ def simple_merge():
     print look(merged)
     #tocsv(merged, datadir+"minimerge.csv")
 
+def browser_ids():
+    b = fromcsv("data/Project Browser English.csv")
+    b=skip(b,1)
+    b = cut(b,'Project Number')
+    ids = skip(b,1)
+    return [i for i, in ids]
+
+
+
+def merged_ids():
+    b = fromcsv("data/full_merge.csv")
+
+    print header(b)
+    ids = cut(b,"Project number")
+    ids = skip(ids,1)
+    return [i for i, in ids]
+
+def joined_report():
+    ids = merged_ids()
+    print rowcount(ids)
+    ids = skip(ids,1)
+    u=[i for i in ids]
+    print len(u)
+    uniq = set(u)
+    print len(uniq)
+
+
+
+def join_test():
+    '''
+
+
+        Number of HPDS records:  247782
+        Unique Project numbers in HPDS:  8252
+
+        To ensure join is being properly performed, iterate through 
+        project browser ids, and count the number of matching rows in 
+        merged HDPS
+
+    '''
+    hpds=merged_ids()
+    print "Number of HPDS records: ", len(hpds)
+    print "Unique Project numbers in HPDS: ", len(set(hpds))
+    brow=browser_ids()
+    print "Unique Browser project numbers: ", len(set(brow))
+
+    print "Intersection of IDs: ", len(set(hpds).intersection(set(brow)))
+    print "Union of IDs: ", len(set(hpds).union(set(brow)))
+    print "IDs in HDPS but not in Project Browser : ", len(set(hpds).difference(set(brow)))
+    print "IDs in Project Browser, but not in HPDS : ", len(set(brow).difference(set(hpds)))
+
+    # There must be some numbers in the Project Browser that is not the in HDPS
+    ''' OUTPUT:
+
+        Number of HPDS records:  247782  
+        Unique Project numbers in HPDS:  8252
+        Unique Browser project numbers:  2801
+        Intersection of IDs:  2482
+        Union of IDs:  8571
+        IDs in HDPS but not in Project Browser :  5770
+        IDs in Project Browser, but not in HPDS :  319
+
+        Number of HPDS records after join:  19566  + 319 Projects 
+        that are in Project browser but not in HDPS.  TOTAL: 19885 
+
+        ---------------------------------------------
+
+        Second time around: 
+
+        Number of HPDS records:  90106
+        Unique Project numbers in HPDS:  2801
+        Unique Browser project numbers:  2801
+        Intersection of IDs:  2801
+        Union of IDs:  2801
+        IDs in HDPS but not in Project Browser :  0
+
+        This is a great test, because it means the merge was successful :)
+
+        '''
+
 def compare_headers():
     pb = skip(fromcsv(csvfiles['browser']),1)
     pb = header(rename(pb, 'Project Number', 'Project number'))
@@ -226,12 +313,67 @@ def compare_headers():
     s = set(pb).intersection(set(hdps) )
     pprint(s)
     
+def merge_and_join():
+    '''
+        Some notes about these files:
+        * There are 2801 records in the Project Browser file
+        * Each project ID is unique eg. rowcount(b) == rowcount(unique(b,0))
+        * We need all the rows from HDPS files that correspond to one of these project IDS
+        * 
 
+    '''
+    b = fromcsv("data/Project Browser English.csv")
+    # Skip first line, which contains publish data(?)
+    # 'CIDA Project Browser - 2013-11-12 19:00:51 - all published projects'
 
+    b = skip(b,1)
+    # Rename key column to match HPDS files
+    b = rename(b, 'Project Number', 'Project number')
+    pprint(header(b))
+    print rowcount(b)
 
+    '''
+    # cut some stuff out so it's easier to work with
+    b1=cut(rowslice(b, 1,5),0,2,6,7,9)
+    # Remove Description, Country, DAC Sector, Expected Results, Progress and Results Achieved'
+    b2 = cutout(b,3,7,10,12,13)
+    f = search(b2,'2013')
+    print look(f)
+    sys.exit()
+    pprint(look(b1))
+    '''
+
+    #open hdps
+    h = fromcsv("data/HDPS-2005-2012-eng.csv")
+    h = skip(h, 1)
+    pprint(header(h))
+    
+    h1=cut(rowslice(h, 1,5),1,2,47,49)
+    print rowcount(h)
+    print "---- Merging -----"
+    j = rightjoin(h,b, "Project number")
+    print rowcount(j)
+    tocsv(j, "data/full_merge.csv")
+    sys.exit()
+    # Join them
+    joined = outerjoin(h1, b1, key="Project number")  
+    pprint(header(joined))
+    pprint(look(joined))
+    # Compare sizes
+    print rowcount(b1),rowcount(h1),rowcount(joined)
 
 def main():
+    print "Use me when it's time to run everything in crontab"   
+    
+if __name__ == '__main__':
+    
+    create_postgres_table()
+    #merge_and_join()
+	#joined_report()
+	#manual_count()
 
     #combine_hpds()
-    load_postrges()
+    #load_postrges()
+
+
 
