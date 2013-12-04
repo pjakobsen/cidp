@@ -20,14 +20,19 @@ def create_config(csvfile,config_name):
         Creates a configuration file from a CSV file
     '''
     print csvfile
-    var = raw_input("This file already exists. Do you wish to continue? (Yes/No) ")
-    # lets create that config file for next time...
+    try: 
+        open(config_name+".ini")
+        var = raw_input("This file already exists. Do you wish to continue? (Yes/No) ")
+    except:
+        pass
+        
 
     if var == 'Yes':
         cfgfile = open(config_name+".ini", "w")
         examplefile = open(config_name+".example", "w")
     else:
         print "goodbye"
+        sys.exit()
         
 
     c = fromcsv(csvfile)
@@ -49,8 +54,9 @@ def create_config(csvfile,config_name):
         # Connect words with underscore
         new = new.replace("/","_")
         new = new.replace(" ","_")
+        new = new.replace("-","_")
         new = new.lower()
-        Config.set('FieldMap',new, "VARCHAR(100)")
+        Config.set('FieldMap',c, new + " VARCHAR(10)")
 
     Config.write(cfgfile)
     cfgfile.close()
