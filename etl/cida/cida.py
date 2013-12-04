@@ -12,18 +12,10 @@ from petl import *
 from petl.fluent import etl
 import sqlite3
 import psycopg2
-from petl.fluent import etl
 import ConfigParser
+import messytables
 
-datadir = ''
-csvfiles = {'browser': datadir + 'browser.csv',
- 'hdps-2012': datadir + 'hpds-2012.csv',
- 'hdps-2011': datadir + 'hpds-2011.csv',
- 'hdps-2010': datadir + 'hpds-2010.csv',
- 'hdps-2009': datadir + 'hpds-2009.csv',
- 'hdps-2008': datadir + 'hpds-2008.csv',
- 'hdps-2007': datadir + 'hpds-2007.csv',
- 'hdps-2006': datadir + 'hpds-2006.csv'}
+
 fieldmap = {'Fiscal year': 'year',
  'Project number': 'project',
  'Status': 'status',
@@ -59,44 +51,16 @@ def project_browser():
 
 
 def combine_hpds():
-    pprint(header(fromcsv(csvfiles['hdps-2012'])))
-
-    def cutem(key, value):
-        c = fromcsv(value)
-        if 'Date created' in ''.join(header(c)):
-            c = skip(c, 1)
-        c = cut(c, fieldmap.keys())
-        c = rename(c, fieldmap)
-        c = convert(c, 'year', {
-         '2011/2012': 2012,
-         '2010/2011': 2011,
-         '2009/2010': 2010,
-         '2008/2009': 2009,
-         '2007/2008': 2008,
-         '2006/2007': 2007,
-         '2005/2006': 2006})
-        return (key, c)
-
-    csv = dict((cutem(key, value) for key, value in csvfiles.items()))
-    
-    merged = mergesort(csv['hdps-2012'], 
-                         csv['hdps-2011'], 
-                         csv['hdps-2010'], 
-                         csv['hdps-2009'],           
-                         csv['hdps-2008'],
-                         csv['hdps-2007'],
-                         csv['hdps-2006'], 
-                        key='project')
-    
-   
-    # Need to get title from Project browser
-    # Count should be the same after performing this operation
-    print rowcount(merged)
-    browser = project_browser()
-    joined = outerjoin(merged, browser, key="project")
-    print rowcount(joined)
-    print look(joined)
-    tocsv(rowslice(joined), datadir + 'joined.csv')
+  	# Combine HPDS files
+    f = open("HDPS-2005-2012-eng.csv", "w")
+    for subdir, dirs, files in os.walk("data/hdps"):
+        for file in files:
+            
+            tempfile=open("data/hdps/" + file,'r')
+            
+            f.write(tempfile.read())
+            tempfile.close()
+    f.close()
 
 def project_id_sets():
     browser = project_browser()
@@ -104,32 +68,33 @@ def project_id_sets():
     print rowcount(unique(browser,'project'))
     
 
-def load_sqlite_db():
-    ''' SQLite chokes on the character sets in the data, use Postgres instead'''
-    fields = ','.join(fieldmap.values())
-    print fields
-    
-   
-    table = fromcsv(datadir + 'merged.csv')
-    table_name = 'projects'
-    try:
-        conn = sqlite3.connect('cida.db')
-        c = conn.cursor()
-        sql = 'create table  {} ({})'.format(table_name, fields)
-        print sql
-        c.execute(sql)
-        conn.commit()
-    except:
-        raise
+  
+def fix_types():
+    # Need to repairs some fields
+    m = fromcsv('data/full_merge.csv')
+    remove=['Expected Results',
+            'Progress and Results Achieved',
+            ]
+    m = cutout(m,*remove)
 
-    todb(table, conn, table_name)
+    print header(m)
+    sys.exit()
+    print look(m)
+    m = convert(m, 'Fiscal year', int)
+    print look(m)
+    tocsv(m, 'data/fixed_merge.csv')
+
+def messy_guess():
+    # guess column types using messytables.
+    # this is not useful when every field is a string
+    fh = open('data/fixed_merge.csv', 'rb')
+    table_set = messytables.CSVTableSet(fh)
+    # A table set is a collection of tables:
+    row_set = table_set.tables[0]
+    print row_set.sample.next()
+    types = messytables.type_guess(row_set.sample, strict=True)
     
-def create_postgres_table():
-    m = fromcsv("data/full_merge.csv")
-    pprint(header(m))
-    print len(header(m))
-    
-    
+    pprint(types)   
 
 def load_postrges():
     '''
@@ -147,7 +112,7 @@ def load_postrges():
     220,000,000
     '''
     
-    fields = hdps.conf
+    
     table = fromcsv(datadir + 'joined.csv')
     table = rename(table, 'Title', 'browser_title')
     # table = rename(table, 'Start', 'browser_start_date')
@@ -164,31 +129,18 @@ def load_postrges():
     print(look(tail(table)))
     
     
-    table_name = 'projects'
+    create_postgres_table()
     try:
-        con = psycopg2.connect(database='cidp_dev', user='cidp') 
-        cur = con.cursor()
-        cur.execute("SET CLIENT_ENCODING TO 'iso-8859-1'")
-	try: 
-            cur.execute('DROP TABLE projects')
-        except:
-            pass   	
-        sql = 'CREATE TABLE {} ({})'.format(table_name, ",".join(fields))
-        try:
-            cur.execute('SELECT version()')  
-            print cur.fetchone()
-            cur.execute(sql)
-            con.commit()
-            todb(table, con, table_name)
-            print "-------------- Load OK: Testing one record -------------"
-            cur.execute('SELECT * from projects where project_id=10000')
-            r  = cur.fetchone()
-            print r
-        except Exception, e:
-            print e.pgerror
+        todb(table, con, table_name)
+        print "-------------- Load OK: Testing one record -------------"
+        cur.execute('SELECT * from projects where project_id=10000')
+        r  = cur.fetchone()
+        print r
+
     except Exception, e:
         print e.pgerror
         print e
+       
     
     
 
@@ -230,8 +182,6 @@ def browser_ids():
     b = cut(b,'Project Number')
     ids = skip(b,1)
     return [i for i, in ids]
-
-
 
 def merged_ids():
     b = fromcsv("data/full_merge.csv")
@@ -358,16 +308,47 @@ def merge_and_join():
     # Join them
     joined = outerjoin(h1, b1, key="Project number")  
     pprint(header(joined))
-    pprint(look(joined))
+    pprint(look(joined,style='simple'))
     # Compare sizes
     print rowcount(b1),rowcount(h1),rowcount(joined)
+
+
+def create_postgres_table(ini):
+    import ConfigParser
+    import ast
+
+    config = ConfigParser.RawConfigParser()
+    config.read(ini)
+    sql_fields = ["{} {}".format(name, type) for (name,type) in config.items('FieldMap')]
+    sql = "CREATE TABLE cida (" + ", ".join(sql_fields) + " );"
+    
+    db= config.get("DataStore","db")
+    user= config.get("DataStore","db_user")
+    table_name = config.get("DataStore","db_table")
+    print db,user,table_name
+    
+    try:
+        con = psycopg2.connect(database=db, user=user) 
+        #con = psycopg2.connect(database='cidp_dev', user='cidp') 
+        cur = con.cursor()
+        cur.execute("SET CLIENT_ENCODING TO 'iso-8859-1'")
+        print cur
+        
+
+        cur.execute('SELECT version()')  
+        print cur.fetchone()
+        cur.execute(sql)
+        con.commit()
+    except Exception, e:
+
+        print e.pgerror
+
 
 def main():
     print "Use me when it's time to run everything in crontab"   
     
 if __name__ == '__main__':
-    
-    create_postgres_table()
+    create_postgres_table("../cida.ini")
     #merge_and_join()
 	#joined_report()
 	#manual_count()
