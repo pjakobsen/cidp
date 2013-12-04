@@ -13,6 +13,7 @@ from petl.fluent import etl
 import sqlite3
 import psycopg2
 import ConfigParser
+import ConfigParser
 import messytables
 
 
@@ -314,15 +315,16 @@ def merge_and_join():
 
 
 def create_postgres_table(ini):
-    import ConfigParser
-    import ast
+
 
     config = ConfigParser.RawConfigParser()
+    # dont' change  names to lower case
+    config.optionxform = str
     config.read(ini)
     for name, type in config.items('FieldMap'):
         print type.split(" ")
    
-    sql_fields = [type for (name,type) in config.items('FieldMap')]
+    sql_fields = [type for (name,type) in config.items('FieldMap') if type != "DROP"]
     print sql_fields
  
     
@@ -362,6 +364,59 @@ def create_postgres_table(ini):
 
         print e.pgerror
 
+def auto_load_postrges(csvfile, ini):
+    
+    table = fromcsv(csvfile)
+    print len(header(table))
+    # remove rows without title or amount
+    #table = select(table, 'browser_title', lambda v: v != '')
+    #table = select(table, 'amount', lambda v: v != '')
+    config = ConfigParser.RawConfigParser()
+    # dont' change  names to lower case
+    config.optionxform = str
+    config.read(ini)
+    print "--------- Removing Fields and renaming ----------"
+
+    for name, type in config.items('FieldMap'):
+        new = type.split(" ")[0]
+        if type == "DROP":
+            print name
+            table = cutout(table, name)
+            
+        else:
+            table = rename(table, name, new)
+    #FIXME
+    table = cutout(table, "status")
+    pprint (header(table))    
+    print "--------- Renaming Done  ----------"  
+
+    # FIXME
+    table = convert(table,'maximum_cida_contribution', 'replace', '$ ', '') # Get rid of the dollar sign
+    table = convert(table,'maximum_cida_contribution', 'replace', ',', '') # Get rid of commas
+    table =convert(table, 'start_date', int)
+    table =convert(table, 'end_date', int)
+    table =convert(table, 'maximum_cida_contribution', float)
+    table =convert(table, 'amount_spent', float)
+    table =convert(table, 'untied_amount', float)
+    
+    db= config.get("DataStore","db")
+    user= config.get("DataStore","db_user")
+    table_name = config.get("DataStore","db_table")
+    try:
+        print db,user,table_name
+        con = psycopg2.connect(database=db, user=user) 
+
+        cur = con.cursor()
+        todb(table, con, 'cida')
+        print "-------------- Load OK: Testing one record -------------"
+        cur.execute('SELECT * from projects where project_id=10000')
+        r  = cur.fetchone()
+        print r
+
+    except Exception, e:
+        print e.pgerror
+        print e
+
 
 def main():
     print "Use me when it's time to run everything in crontab"   
@@ -373,7 +428,9 @@ if __name__ == '__main__':
 	#manual_count()
 
     #combine_hpds()
-    #load_postrges()
+    # May need to run 
+    # iconv -f ASCII -t utf-8//IGNORE fixed_merge.csv >  fixed_chars.csv
+    auto_load_postrges('data/fixed_chars.csv','../cida.ini')
 
 
 
