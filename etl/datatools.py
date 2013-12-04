@@ -20,6 +20,7 @@ def create_config(csvfile,config_name):
         Creates a configuration file from a CSV file
     '''
     print csvfile
+    var = ''
     try: 
         open(config_name+".ini")
         var = raw_input("This file already exists. Do you wish to continue? (Yes/No) ")
@@ -45,19 +46,28 @@ def create_config(csvfile,config_name):
 
     # add the settings to the structure of the file, and lets write it out...
     Config = ConfigParser.ConfigParser()
+    # dont' change  names to lower case
+    Config.optionxform = str
     Config.add_section('FieldTypes')
     Config.add_section('FieldMap')
-    for c in columns:
+    for name in columns:
         #Config.set('FieldTypes',c)
-        
-        new = c.split("(", 1)[0].strip()
+        #print name
+        new = name
+        new = new.split("(", 1)[0].strip()
         # Connect words with underscore
         new = new.replace("/","_")
         new = new.replace(" ","_")
         new = new.replace("-","_")
         new = new.lower()
-        Config.set('FieldMap',c, new + " VARCHAR(10)")
-
+        # try to guess some of the names
+        if "amount" in name: 
+            print name
+            Config.set('FieldMap',name, new + " FLOAT")
+        else:
+            print name
+            Config.set('FieldMap',name, new + " VARCHAR(10)")
+        
     Config.write(cfgfile)
     cfgfile.close()
 

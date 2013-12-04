@@ -319,8 +319,13 @@ def create_postgres_table(ini):
 
     config = ConfigParser.RawConfigParser()
     config.read(ini)
-    sql_fields = ["{} {}".format(name, type) for (name,type) in config.items('FieldMap')]
-    sql = "CREATE TABLE cida (" + ", ".join(sql_fields) + " );"
+    for name, type in config.items('FieldMap'):
+        print type.split(" ")
+   
+    sql_fields = [type for (name,type) in config.items('FieldMap')]
+    print sql_fields
+ 
+    
     
     db= config.get("DataStore","db")
     user= config.get("DataStore","db_user")
@@ -330,14 +335,28 @@ def create_postgres_table(ini):
     try:
         con = psycopg2.connect(database=db, user=user) 
         #con = psycopg2.connect(database='cidp_dev', user='cidp') 
+        #con.autocommit = True
         cur = con.cursor()
+        
+        # see if the table exists
+        try:
+            cur.execute("select * from information_schema.tables where table_name=%s", ('cida',))
+            if bool(cur.rowcount):
+                # drop table
+                print "---------- Dropping table -----------"
+                cur.execute("DROP TABLE cida")
+                
+        except:
+            pass
+            
         cur.execute("SET CLIENT_ENCODING TO 'iso-8859-1'")
         print cur
-        
-
         cur.execute('SELECT version()')  
         print cur.fetchone()
+
+        sql = "CREATE TABLE cida (" + ", ".join(sql_fields) + " );"
         cur.execute(sql)
+        #Not needed since automcommit is set to true: con.commit()
         con.commit()
     except Exception, e:
 
