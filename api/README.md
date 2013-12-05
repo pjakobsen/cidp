@@ -14,7 +14,9 @@ Example:
 
 http://cidp-demo.herokuapp.com/ contains a simple example using PHP and Google Charts
 
-::
+An API call is made to the CIDP api, which is reformatted to conform to json format required by Google charts
+
+'''
 
 $jsonObject = json_decode(file_get_contents("http://cidp.herokuapp.com/cube/projects/aggregate?drilldown=continent"));
 
@@ -37,19 +39,11 @@ $new['rows']=$records;
 $json = json_encode($new);
 echo $json;
 
-::
+'''
 
-::
-  <!--Load the AJAX API-->
-    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <script type="text/javascript">
-    
-    // Load the Visualization API and the piechart package.
-    google.load('visualization', '1', {'packages':['corechart']});
-      
-    // Set a callback to run when the Google Visualization API is loaded.
-    google.setOnLoadCallback(drawChart);
+The Google Charts code can read and display the data without too much fuss.
+
+'''
       
     function drawChart() {
       var continentJsonData = $.ajax({
@@ -82,7 +76,7 @@ echo $json;
 		<tr><td><div id="chart_div"></div></td></tr>
 		....
 		
-::
+'''
 
 
 ++++++++++++++++++
