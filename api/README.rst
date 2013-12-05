@@ -1,9 +1,8 @@
 There are two suggested data sources for working with AID data. The data from them can be combined in interesting ways to show new insights about Canadian Foreign Aid spending.
 
-
-
 2. IATI Datastore
-------------------
+-----------------
+
 The International Aid Transparency Initiative (IATI) aims to make information about aid spending easier to access. To this end, they publish the IATI Standard and keep a Registry of data in that form.
 
 The IATI Datastore is provided to help users of IATI data access the extracts they are interested in.
@@ -12,6 +11,7 @@ The API and use documentation available at http://iati-datastore.herokuapp.com/
 
 Example:
 --------
+
 http://cidp-demo.herokuapp.com/ contains a simple example using PHP and Google Charts
 
 ::
