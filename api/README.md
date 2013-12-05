@@ -17,11 +17,35 @@ The API and use documentation available at http://iati-datastore.herokuapp.com/
 Example:
 --------
 
+First, a simple example of how to find sector information using Python
+
+```
+# We're interested in all health related sectors. First ask for all sectors
+  url = "http://localhost:5000/aggregate?drilldown=sector"
+  data = json.load(urllib2.urlopen(url))
+  # Need to build a list of health sector names, and then print out aggregate info for each sector
+  print [(c['sector'],c['record_count'],c['amount_sum']) for c in data['cells'] if 'ealth' in c['sector']]
+
+```
+
+Running this code will produce the following list of tuples, containing the Sector Name, the number of projects, and the total funds
+
+```
+(u'Health education', 1193, 40902025.194972)
+(u'Basic health care', 2292, 501887731.420156)
+(u'Reproductive health care', 584, 78442757.3484489)
+(u'Basic health infrastructure', 294, 72309202.482159)
+(u'Health policy and administrative management', 2662, 172334309.35723)
+(u'Health personnel development', 1696, 131600848.03254)
+(u'Personnel development for population and reproductive health', 114, 48989087.246)
+```
+PHP Example
+
 http://cidp-demo.herokuapp.com/ contains a simple example using PHP and Google Charts
 
 An API call is made to the CIDP api, which is reformatted to conform to json format required by Google charts
 
-```
+c
 
 $jsonObject = json_decode(file_get_contents("http://cidp.herokuapp.com/cube/projects/aggregate?drilldown=continent"));
 
