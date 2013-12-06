@@ -371,10 +371,14 @@ def auto_load_postrges(csvfile, ini):
     pprint (header(table))    
     print "--------- Renaming Done  ----------"  
 
-    # FIXME
+
+    # http://pythonhosted.org/petl/0.11.1/#petl.convert
+    #table = convert(table1, ('foo', 'bar', 'baz'), unicode)
     table = convert(table,'maximum_cida_contribution', 'replace', '$ ', '') # Get rid of the dollar sign
     table = convert(table,'maximum_cida_contribution', 'replace', ',', '') # Get rid of commas
     table =convert(table, 'start_date', int)
+    table = convert(table, 'fiscal_year', lambda year: year.split("/")[1])
+    table = convert(table, 'fiscal_year', int)
     table =convert(table, 'end_date', int)
     table =convert(table, 'maximum_cida_contribution', float)
     table =convert(table, 'amount_spent', float)
