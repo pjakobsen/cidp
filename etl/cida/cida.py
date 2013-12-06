@@ -374,16 +374,21 @@ def auto_load_postrges(csvfile, ini):
 
     # http://pythonhosted.org/petl/0.11.1/#petl.convert
     #table = convert(table1, ('foo', 'bar', 'baz'), unicode)
-    table = convert(table,'maximum_cida_contribution', 'replace', '$ ', '') # Get rid of the dollar sign
-    table = convert(table,'maximum_cida_contribution', 'replace', ',', '') # Get rid of commas
-    table =convert(table, 'start_date', int)
-    table = convert(table, 'fiscal_year', lambda year: year.split("/")[1])
-    table = convert(table, 'fiscal_year', int)
-    table =convert(table, 'end_date', int)
-    table =convert(table, 'maximum_cida_contribution', float)
-    table =convert(table, 'amount_spent', float)
-    table =convert(table, 'untied_amount', float)
-    
+    table1= convert(table)
+    #table1 = convert(table1, 'maximum_cida_contribution', 'replace', '$ ', '') # Get rid of the dollar sign
+    #table1 = convert(table1, 'maximum_cida_contribution', 'replace', ',', '') # Get rid of commas
+    #table1['maximum_cida_contribution'] = 'replace', '$ ', ''
+
+    table1['start_date'] = int
+    table1['fiscal_year'] = lambda year: int(year.split("/")[1])
+    #table1['fiscal_year'] = int
+    table1['end_date'] = int
+    table1['maximum_cida_contribution'] = float
+    table1['amount_spent'] = float
+    table1['untied_amount'] = float
+ 
+    print look(cut(table1,"fiscal_year", "maximum_cida_contribution"),1000,1200)
+
     db= config.get("DataStore","db")
     user= config.get("DataStore","db_user")
     table_name = config.get("DataStore","db_table")
@@ -392,9 +397,9 @@ def auto_load_postrges(csvfile, ini):
         con = psycopg2.connect(database=db, user=user) 
 
         cur = con.cursor()
-        todb(table, con, 'cida')
+        todb(table1, con, 'cida')
         print "-------------- Load OK: Testing one record -------------"
-        cur.execute('SELECT * from projects where project_id=10000')
+        cur.execute('SELECT * from projects where id=10000')
         r  = cur.fetchone()
         print r
 
