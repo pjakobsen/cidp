@@ -14,6 +14,21 @@ export ARCHFLAGS="-arch i386 -arch x86_64"
 export PATH=$PATH:/Library/PostgreSQL/9.1/bin
 pip install psycopg2
 
+Migrata Data to Heroku
+----------------------
+
+Export local database:
+
+
+pg_dump -Fc --no-acl --no-owner -h localhost -U peder crs > dbexport.dump
+scp -P 7822  dbexport.pgsql jakobsen@a2s64.a2hosting.com:~/public_html/data/
+heroku pgbackups:restore HEROKU_POSTGRESQL_COBALT_URL 'http://www.jakobsen.ca/data/dbexport.pgsql'
+
+heroku run bash 
+heroku pg to see databases
+
+
+
 
 Data Sources
 ------------

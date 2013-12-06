@@ -67,23 +67,6 @@ def project_id_sets():
     browser = project_browser()
     print rowcount(browser)
     print rowcount(unique(browser,'project'))
-    
-
-  
-def fix_types():
-    # Need to repairs some fields
-    m = fromcsv('data/full_merge.csv')
-    remove=['Expected Results',
-            'Progress and Results Achieved',
-            ]
-    m = cutout(m,*remove)
-
-    print header(m)
-    sys.exit()
-    print look(m)
-    m = convert(m, 'Fiscal year', int)
-    print look(m)
-    tocsv(m, 'data/fixed_merge.csv')
 
 def messy_guess():
     # guess column types using messytables.
@@ -326,9 +309,7 @@ def create_postgres_table(ini):
    
     sql_fields = [type for (name,type) in config.items('FieldMap') if type != "DROP"]
     print sql_fields
- 
-    
-    
+
     db= config.get("DataStore","db")
     user= config.get("DataStore","db_user")
     table_name = config.get("DataStore","db_table")
@@ -356,7 +337,7 @@ def create_postgres_table(ini):
         cur.execute('SELECT version()')  
         print cur.fetchone()
 
-        sql = "CREATE TABLE cida (" + ", ".join(sql_fields) + " );"
+        sql = "CREATE TABLE cida (id SERIAL PRIMARY KEY," + ", ".join(sql_fields) + " );"
         cur.execute(sql)
         #Not needed since automcommit is set to true: con.commit()
         con.commit()
@@ -429,7 +410,7 @@ if __name__ == '__main__':
 
     #combine_hpds()
     # May need to run 
-    # iconv -f ASCII -t utf-8//IGNORE fixed_merge.csv >  fixed_chars.csv
+    print "did you use: iconv -f ASCII -t utf-8//IGNORE fixed_merge.csv >  fixed_chars.csv"
     auto_load_postrges('data/fixed_chars.csv','../cida.ini')
 
 

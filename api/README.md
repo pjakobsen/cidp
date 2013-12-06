@@ -1,11 +1,10 @@
 There are two suggested data sources for working with AID data. The data from them can be combined in interesting ways to show new insights about Canadian Foreign Aid spending.
 
-1. CIDP API
------------
+
 
 The Canadian International Development Platform wraps development data about projects into a OLAP server that can be accessed via a JSON API.  The name of the data cube is 'projects'; usage documentation can be found along with the API at http://cidp.herokuapp.com/
 
-2. IATI Datastore
+1. IATI Datastore
 -----------------
 
 The International Aid Transparency Initiative (IATI) aims to make information about aid spending easier to access. To this end, they publish the IATI Standard and keep a Registry of data in that form.
@@ -14,8 +13,15 @@ The IATI Datastore is provided to help users of IATI data access the extracts th
 
 The API and use documentation available at http://iati-datastore.herokuapp.com/
 
-Example:
---------
+2. CIDP API
+-----------
+Useful API Calls
+
+Get all the project data http://cidp.herokuapp.com/cube/projects/facts
+
+
+Example code:
+------------
 
 First, a simple example of how to find sector information using Python
 

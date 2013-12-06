@@ -1,28 +1,25 @@
 {
-    "dimensions": [
-		{"name":"year"},
-		{"name":"project"},
-        {"name":"amount"},
-		{"name":"continent"},
-		{"name":"sector"},
-		{"name":"status"},
-		{"name":"region"},
-		{"name":"org"},
-		{"name":"browser_title"}
-    ],
 
-    "cubes": [
-        {
-            "name": "projects",
-            "dimensions": ["start_date","amount_spent"],
+	"dimensions": [
+		{"name":"browser_title"},
+		{"name":"year"}
+	],
+	"cubes": [
+        {   
+			"name": "cida",
+			"mappings": {
+		    	"project.name": "cida.product_number"
+			},
 			"measures": [
 				{"name":"amount_spent",
 				 "label":"Amount Spent",
-				 "aggregations":["sum","min", "max"]
+				 "aggregations":["sum","min", "max","avg"]
+				},
+				{"name":"maximum_cida_contribution",
+				 "label":"Maximum CIDA Contribution",
+				 "aggregations":["sum","min", "max","avg"]
 				}
-			
 			]
-
-        }
-    ]
+		}	
+	]
 }
