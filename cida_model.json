@@ -10,13 +10,15 @@
 		{"name":"cida_sector_of_focus"},
 		{"name":"dac_sector"},
 		{"name":"continent_name"},
-		{"name": "country_region_name"}
+		{"name": "country_region_name"},
+		{"name": "executing_agency_partner"},
+		{"name": "organisation_name"}
 	
 	],
 	"cubes": [
         {   
 			"name": "cida",
-			"dimensions":["project_number","title","fiscal_year","sector_name","cida_sector_of_focus","dac_sector","continent_name","country_region_name"],
+			"dimensions":["project_number","title","fiscal_year","sector_name","cida_sector_of_focus","dac_sector","continent_name","country_region_name","executing_agency_partner","organisation_name"],
 			"mappings": {
 		    	"project.name": "cida.title"
 			},
