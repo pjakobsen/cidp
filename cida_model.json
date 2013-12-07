@@ -16,7 +16,7 @@
 	"cubes": [
         {   
 			"name": "cida",
-			"dimensions":["title","fiscal_year","sector_name","cida_sector_of_focus","dac_sector","continent_name","country_region_name"],
+			"dimensions":["project_number","title","fiscal_year","sector_name","cida_sector_of_focus","dac_sector","continent_name","country_region_name"],
 			"mappings": {
 		    	"project.name": "cida.title"
 			},
