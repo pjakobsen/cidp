@@ -1,5 +1,8 @@
-There are two suggested data sources for working with AID data. The data from them can be combined in interesting ways to show new insights about Canadian Foreign Aid spending.
+There are two suggested data sources for working with AID data. The data from them can be combined in interesting ways to show new insights about Canadian Foreign Aid spending.  
 
+Use JSONView with Chrome https://chrome.google.com/webstore/detail/jsonview/chklaanhfefbnpoihckbnefhakgolnmc?hl=en
+
+OR pipe to a tool on the command line like:   cat somejson.json | python -m json.tool
 
 
 The Canadian International Development Platform wraps development data about projects into a OLAP server that can be accessed via a JSON API.  The name of the data cube is 'projects'; usage documentation can be found along with the API at http://cidp.herokuapp.com/
