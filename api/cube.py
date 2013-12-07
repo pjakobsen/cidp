@@ -31,7 +31,7 @@ browser = ws.browser(cube)
 
 cell = cubes.Cell(cube)
 #cell = cell.slice("year", [2010])
-result = browser.aggregate(cell, drilldown=["cida_sector_of_focus"])
+result = browser.aggregate(cell, drilldown=["project_number"])
 pprint(result.cells)
 for i,c in enumerate(result.cells):
     print i

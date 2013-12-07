@@ -23,6 +23,9 @@ Useful API Calls
 Get all the CIDIA project data: 
 http://cidp.herokuapp.com/cube/cida/facts
 
+Get a certain cut of the data only:
+http://cidp.herokuapp.com/cube/cida/facts?cut=project_number:A033033007
+
 Aggregate expenditure amounts, drill down by continent:
 http://cidp.herokuapp.com/cube/cida/aggregate?drilldown=continent_name
 
