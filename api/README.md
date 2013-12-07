@@ -17,7 +17,17 @@ The API and use documentation available at http://iati-datastore.herokuapp.com/
 -----------
 Useful API Calls
 
-Get all the project data http://cidp.herokuapp.com/cube/projects/facts
+Get all the CIDIA project data: 
+http://cidp.herokuapp.com/cube/cida/facts
+
+Aggregate expenditure amounts, drill down by continent:
+http://cidp.herokuapp.com/cube/cida/aggregate?drilldown=continent_name
+
+Aggregate expenditure amounts, drill down by country and/or region:
+http://cidp.herokuapp.com/cube/cida/aggregate?drilldown=country_region_name
+
+Drill down by sector
+http://cidp.herokuapp.com/cube/cida/aggregate?drilldown=sector_name
 
 
 Example code:
@@ -27,7 +37,7 @@ First, a simple example of how to find sector information using Python
 
 ```
 # We're interested in all health related sectors. First ask for all sectors
-  url = "http://localhost:5000/aggregate?drilldown=sector"
+  url = "http://cidp.herokuapp.com/cube/cida/aggregate?drilldown=sector_name"
   data = json.load(urllib2.urlopen(url))
   # Need to build a list of health sector names, and then print out aggregate info for each sector
   print [(c['sector'],c['record_count'],c['amount_sum']) for c in data['cells'] if 'ealth' in c['sector']]
