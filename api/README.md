@@ -64,7 +64,7 @@ http://cidp-demo.herokuapp.com/ contains a simple example using PHP and Google C
 
 An API call is made to the CIDP api, which is reformatted to conform to json format required by Google charts
 
-c
+```
 
 $jsonObject = json_decode(file_get_contents("http://cidp.herokuapp.com/cube/projects/aggregate?drilldown=continent"));
 
