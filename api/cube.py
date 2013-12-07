@@ -31,10 +31,12 @@ browser = ws.browser(cube)
 
 cell = cubes.Cell(cube)
 #cell = cell.slice("year", [2010])
-result = browser.aggregate(cell)
-pprint(result.summary)
+result = browser.aggregate(cell, drilldown=["cida_sector_of_focus"])
+pprint(result.cells)
+for i,c in enumerate(result.cells):
+    print i
+    pprint(c)
 
-   
 '''
 print result.summary["record_count"]
 print result.summary["amount_sum"]
@@ -46,7 +48,5 @@ for record in result.drilldown:
 # result = browser.aggregate(drilldown=["sector"])   
 result = browser.aggregate(drilldown=["sector"])   
 print result.summary
-print "--------------------"
-conts =  [(c['continent'],round(c['amount_sum'])) for c in result.cells]
-pprint(conts)
 '''
+print "--------------------"

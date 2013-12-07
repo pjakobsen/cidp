@@ -2,13 +2,22 @@
 
 	"dimensions": [
 		{"name":"browser_title"},
-		{"name":"year"}
+		{"name":"fiscal_year"},
+		{"name":"amount_spent"},
+		{"name":"sector_name"},
+		{"name":"title"},
+		{"name":"cida_sector_of_focus"},
+		{"name":"dac_sector"},
+		{"name":"continent_name"},
+		{"name": "country_region_name"}
+	
 	],
 	"cubes": [
         {   
 			"name": "cida",
+			"dimensions":["fiscal_year","sector_name","cida_sector_of_focus","dac_sector","continent_name","country_region_name"],
 			"mappings": {
-		    	"project.name": "cida.product_number"
+		    	"project.name": "cida.title"
 			},
 			"measures": [
 				{"name":"amount_spent",
@@ -19,6 +28,9 @@
 				 "label":"Maximum CIDA Contribution",
 				 "aggregations":["sum","min", "max","avg"]
 				}
+			],
+			"hierarchies": [
+			        {"name": "country_region_name", "levels":["continent_name", "country_region_name"]}
 			]
 		}	
 	]
