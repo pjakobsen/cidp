@@ -43,7 +43,7 @@ First, a simple example of how to find sector information using Python
   url = "http://cidp.herokuapp.com/cube/cida/aggregate?drilldown=sector_name"
   data = json.load(urllib2.urlopen(url))
   # Need to build a list of health sector names, and then print out aggregate info for each sector
-  print [(c['sector'],c['record_count'],c['amount_sum']) for c in data['cells'] if 'ealth' in c['sector']]
+  print [(c['sector_name'],c['record_count'],c['amount_spent_sum']) for c in data['cells'] if 'ealth' in c['sector_name']]
 
 ```
 
