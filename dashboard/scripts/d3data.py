@@ -13,7 +13,7 @@ import urllib2
 from pprint import pprint 
 from petl import *
 import sys
-from collections import defaultdict
+from collections import defaultdict, Counter
 
 
 
@@ -49,36 +49,73 @@ def main():
     use project browser instead,since there seems to be nothing that uniquely identifies historical activities, 
     for example there are 6 entries for #A033033007
     '''
-    dat=[]
+
+    mashup_file=open('mashup.json','w')
+    mashup_data=[]
     for id in list(f)[0:-1]:
 
         project_data = json.load(urllib2.urlopen(fact_url + id))
          # now we can append aggregates
         aggr = json.load(urllib2.urlopen(aggregate_url + id))['summary']
         # just grab the first record
-        #for p in project_data:
-        p=project_data[0]
-        c= p['country_region_name']
-        country =  renamethis[c] if  c in renamethis.keys() else c
+        for p in project_data:
+            #p=project_data[0]
+            c= p['country_region_name']
+            country =  renamethis[c] if  c in renamethis.keys() else c
+        
+            if country not in bads:
+                mashup_data.append({
+                      'id':p['id'],
+                      'project':p['project_number'],
+                      'year':p['fiscal_year'],
+                      'continent':p['continent_name'],
+                      'country':country,
+                      'max':int(round(p['maximum_cida_contribution'])),
+                      'spent':int(round(aggr['amount_spent_sum'])),
+                      'mortality_rate':getmort(c,p['fiscal_year'])})
 
-        if country not in bads:
-            dat.append( {
-                  'id':p['id'],
-                  'project':p['project_number'],
-                  'year':p['fiscal_year'],
-                  'continent':p['continent_name'],
-                  'country':country,
-                  'max':int(round(p['maximum_cida_contribution'])),
-                  'spent':int(round(aggr['amount_spent_sum'])),
-                  'mortality_rate':getmort(c,p['fiscal_year'])}
-                  
-            )
-       
-    comb = petl.fromdicts(dat) 
+            
+    mashup=fromdicts(mashup_data)
+    print look(mashup)
+    key_fields = ['project', 'max', 'year', 'country', 'mortality_rate', 'id', 'continent']
+    value_field = 'spent'
+    ''''
+    tbl_out = (
+        tbl_in
+        .aggregate(key=key_fields, aggregation=sum, value=value_field)
+        .unpack('key', key_fields)
+        .rename('value', value_field)
+    )   
+    '''
+    tbl_out = aggregate(mashup, ['country','year','mortality_rate'], sum, 'spent')
+    tbl_out = unpack(tbl_out, 'key',['country','year','mortality_rate'])
+    tbl_out = rename(tbl_out, 'value','spent')
+    tbl_out = cut(tbl_out, 'country','year','spent','mortality_rate') #cut to reorder
+    
+    
+    print look(tbl_out)
+    tocsv(tbl_out,"mnhc-report.csv")
+def mashup_combine():
+    with open('mashup.json') as f:
+        dat = json.loads(f.read())
+        countries = set([d['country'] for d in dat])
+        for c in countries:
+            c_dat=[(c,d) for d in dat if d['country']==c]
+            print c_dat
+            print "---------"
 
-    print look(comb)
-    petl.tojson(comb, 'mashup.json')
+def mashup_counter():
+    counter = Counter()
+    with open('mashup.json') as f:
+        dat = json.loads(f.read())[0]
+        
+        
+        
+            
 
 if __name__ == '__main__':
 	main()
+	#mashup_combine()
+	#mashup_counter()
+	
 
