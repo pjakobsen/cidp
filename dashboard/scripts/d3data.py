@@ -25,9 +25,9 @@ def main():
     mort_rates = facetcolumns(mort, 'country')
     def getmort(c,y):
         try:
-          return mort_rates[c][y]  
+          return float(mort_rates[c][y][0])
         except:
-          return ''
+          return None
         
     ''' faceting allows us to do for example:
     pprint(mort_rates['Malaysia']['2009'])
