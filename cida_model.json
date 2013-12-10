@@ -1,6 +1,7 @@
 {
 
 	"dimensions": [
+		{"name":"id"},
 		{"name":"browser_title"},
 		{"name":"project_number"},
 		{"name":"fiscal_year"},
@@ -17,7 +18,17 @@
 	"cubes": [
         {   
 			"name": "cida",
-			"dimensions":["project_number","title","fiscal_year","sector_name","cida_sector_of_focus","dac_sector","continent_name","country_region_name","executing_agency_partner","organisation_name"],
+			"dimensions":[
+						"id",
+						"project_number",
+						"title",
+						"fiscal_year",
+						"sector_name",
+						"cida_sector_of_focus",
+						"dac_sector","continent_name",
+						"country_region_name",
+						"executing_agency_partner",
+						"organisation_name"],
 			"mappings": {
 		    	"project.name": "cida.title"
 			},
@@ -32,8 +43,11 @@
 				}
 			],
 			"hierarchies": [
-			        {"name": "country_region_name", "levels":["continent_name", "country_region_name"]}
+			        {"name": "country_region_name", "levels":["continent_name", "country_region_name"]},
+					{"name": "foo", "levels":["project_number", "fiscal_year"]}
+					
 			]
+			
 		}	
 	]
 }

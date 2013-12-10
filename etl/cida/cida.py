@@ -13,7 +13,6 @@ from petl.fluent import etl
 import sqlite3
 import psycopg2
 import ConfigParser
-import ConfigParser
 import messytables
 
 
@@ -296,9 +295,7 @@ def merge_and_join():
     # Compare sizes
     print rowcount(b1),rowcount(h1),rowcount(joined)
 
-
 def create_postgres_table(ini):
-
 
     config = ConfigParser.RawConfigParser()
     # dont' change  names to lower case
@@ -399,7 +396,7 @@ def auto_load_postrges(csvfile, ini):
         cur = con.cursor()
         todb(table1, con, 'cida')
         print "-------------- Load OK: Testing one record -------------"
-        cur.execute('SELECT * from projects where id=10000')
+        cur.execute('SELECT * from cida where id=10000')
         r  = cur.fetchone()
         print r
 

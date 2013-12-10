@@ -58,8 +58,10 @@ def main():
          # now we can append aggregates
         aggr = json.load(urllib2.urlopen(aggregate_url + id))['summary']
         # just grab the first record
-        for p in project_data:
-            #p=project_data[0]
+        #for p in project_data:
+        foo=1
+        if foo==1:
+            p=project_data[0]
             c= p['country_region_name']
             country =  renamethis[c] if  c in renamethis.keys() else c
         
@@ -76,7 +78,10 @@ def main():
 
             
     mashup=fromdicts(mashup_data)
+    #tocsv(mashup,'raw-mnhc.csv')
+    
     print look(mashup)
+    sys.exit()
     key_fields = ['project', 'max', 'year', 'country', 'mortality_rate', 'id', 'continent']
     value_field = 'spent'
     ''''
