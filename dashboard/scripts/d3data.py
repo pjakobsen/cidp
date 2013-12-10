@@ -42,7 +42,7 @@ def main():
     bads = ['Africa MC','Americas MC','Asia MC','Europe MC']
     renamethis={'Afghanistan TIS':'Afghanistan',
                 'Tanzania,Un Rep':'Tanzania',
-                'Lao, Dem. Rep.':'Lao'
+                'Lao, Dem. Rep.':'Lao',
                 'Congo, Dem Rep.':'Congo'}
 
     '''
