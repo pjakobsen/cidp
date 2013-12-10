@@ -20,7 +20,7 @@ from collections import defaultdict, Counter
 def main():
     mort = fromcsv('mortality.csv')
     mort = skip(mort,2)
-    mort = cut(mort,"Country Name","1973","2006","2007","2008","2009","2010","2011","2012")
+    mort = cut(mort,"Country Name","2006","2007","2008","2009","2010","2011","2012")
     mort = petl.rename(mort, 'Country Name', 'country')
     mort_rates = facetcolumns(mort, 'country')
     def getmort(c,y):
@@ -42,7 +42,7 @@ def main():
     bads = ['Africa MC','Americas MC','Asia MC','Europe MC']
     renamethis={'Afghanistan TIS':'Afghanistan',
                 'Tanzania,Un Rep':'Tanzania',
-                'Lao, Dem. Rep':'Lao',
+                'Lao, Dem. Rep.':'Lao'
                 'Congo, Dem Rep.':'Congo'}
 
     '''
