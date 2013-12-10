@@ -58,27 +58,25 @@ def main():
          # now we can append aggregates
         aggr = json.load(urllib2.urlopen(aggregate_url + id))['summary']
         # just grab the first record
-        #for p in project_data:
-        foo=1
-        if foo==1:
-            p=project_data[0]
-            c= p['country_region_name']
-            country =  renamethis[c] if  c in renamethis.keys() else c
-        
-            if country not in bads:
-                mashup_data.append({
-                      'id':p['id'],
-                      'project':p['project_number'],
-                      'year':p['fiscal_year'],
-                      'continent':p['continent_name'],
-                      'country':country,
-                      'max':int(round(p['maximum_cida_contribution'])),
-                      'spent':int(round(aggr['amount_spent_sum'])),
-                      'mortality_rate':getmort(c,p['fiscal_year'])})
+            
+        p=project_data[0]
+        c= p['country_region_name']
+        country =  renamethis[c] if  c in renamethis.keys() else c
+    
+        if country not in bads:
+            mashup_data.append({
+                  'id':p['id'],
+                  'project':p['project_number'],
+                  'year':p['fiscal_year'],
+                  'continent':p['continent_name'],
+                  'country':country,
+                  'max':int(round(p['maximum_cida_contribution'])),
+                  'spent':int(round(aggr['amount_spent_sum'])),
+                  'mortality_rate':getmort(c,p['fiscal_year'])})
 
             
     mashup=fromdicts(mashup_data)
-    #tocsv(mashup,'raw-mnhc.csv')
+    tocsv(mashup,'raw-mnhc.csv')
     
     print look(mashup)
     sys.exit()
