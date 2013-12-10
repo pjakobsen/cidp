@@ -13,7 +13,6 @@
 		{"name": "country_region_name"},
 		{"name": "executing_agency_partner"},
 		{"name": "organisation_name"}
-	
 	],
 	"cubes": [
         {   
