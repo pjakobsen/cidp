@@ -17,29 +17,45 @@ import os
 from bs4 import BeautifulSoup
 from urllib2 import urlopen
 from pprint import pprint
+import petl
 
 def main():
-    url = "http://www.acdi-cida.gc.ca/cidaweb/cpo.nsf/vWebProjByNumEn?OpenView&start=10&end=11"
-    html = urlopen(url).read()
-    soup = BeautifulSoup(html, "lxml")
-    table = soup.find("table")
-    rows = table.findAll('tr')
+    url_list = ["http://www.acdi-cida.gc.ca/cidaweb/cpo.nsf/vWebProjByNumEn?OpenView",
+    "http://www.acdi-cida.gc.ca/cidaweb/cpo.nsf/vWebProjByNumEn?OpenView&start=1001&end=2000",
+    "http://www.acdi-cida.gc.ca/cidaweb/cpo.nsf/vWebProjByNumEn?OpenView&start=2001&end=3000"]
+ 
     links=[]
-    for r in rows:
+   
+    for url in url_list:
+        html = urlopen(url).read()
+        soup = BeautifulSoup(html, "lxml")
+        table = soup.find("table")
+        rows = table.findAll('tr')
+    
+        for r in rows:
 
-        try:
-            col1,col2 = r.findAll('td')[0],r.findAll('td')[1]
-            print col1.find('a').string,"http://www.acdi-cida.gc.ca/"+col1.find('a')['href'],col2.string
-            
-            #print r.find('a').string, r.find('a')['href']
-        except:
-            pass
-        #links.append((r.find('a').string, r.find('a')['href']))
-        
-    print links
-    #link = soup.find("a", "col1 alignCenter")['href']
-    #print link
+            try:
+                col1,col2 = r.findAll('td')[0],r.findAll('td')[1]
+                dct={}
+                dct['id']=col1.find('a').string
+                dct['link']= "http://www.acdi-cida.gc.ca/"+col1.find('a')['href']
+                try:
+                    u = col2.string.encode('utf8')
+                    dct['name']=u
+                except:
+                    raise
+                
+                print dct
+                links.append(dct)
+            except IndexError:
+                pass
+            except:
+                raise
 
+    table = petl.fromdicts(links)
+    print petl.look(table)
+    table = petl.cut(table,"id","name","link")
+    petl.tocsv(table, "project_links.csv")
 
 if __name__ == '__main__':
 	main()
