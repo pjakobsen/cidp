@@ -21,19 +21,26 @@ import petl
 from sqlalchemy import *
 from datetime import datetime
 
+
 def main():
+    
+    engine = create_engine('sqlite:///../db/devdata.sqlite')
+    engine.echo = True
+    connection = engine.connect()
+    metadata = MetaData(engine)
+    country = Table('project', metadata, autoload=True, autoload_with=engine)
+    
     url_list = ["http://www.acdi-cida.gc.ca/cidaweb/cpo.nsf/vWebProjByNumEn?OpenView",
     "http://www.acdi-cida.gc.ca/cidaweb/cpo.nsf/vWebProjByNumEn?OpenView&start=1001&end=2000",
     "http://www.acdi-cida.gc.ca/cidaweb/cpo.nsf/vWebProjByNumEn?OpenView&start=2001&end=3000"]
  
-    links=[]
-   
+
     for url in url_list:
         html = urlopen(url).read()
         soup = BeautifulSoup(html, "lxml")
         table = soup.find("table")
         rows = table.findAll('tr')
-    
+        stmt = project.insert()
         for r in rows:
 
             try:
@@ -47,30 +54,24 @@ def main():
                 except:
                     raise
                 
-                print dct
-                links.append(dct)
+                stmt.execute(id='2', country_name='Canada2', country_code='KC2',short_name="Canuck3")
             except IndexError:
                 pass
             except:
                 raise
 
     table = petl.fromdicts(links)
-    print petl.look(table)
+
     
-    table = petl.cut(table,"id","name","link")
-    petl.tocsv(table, "project_links.csv")
-  
-def todb():  
-    engine = create_engine('sqlite:///../db/devdata.sqlite')
-    engine.echo = True
-    connection = engine.connect()
-    meta = MetaData()
-    meta.reflect(bind=engine)
-    for table in reversed(meta.sorted_tables):
-        print table
+def todb(): 
+
+
+   
+   
     
 
 if __name__ == '__main__':
-    todb()
-    #main()
+    #pass
+    #todb()
+    main()
 
