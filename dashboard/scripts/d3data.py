@@ -78,8 +78,7 @@ def main():
     mashup=fromdicts(mashup_data)
     tocsv(mashup,'raw-mnhc.csv')
     
-    print look(mashup)
-    sys.exit()
+
     key_fields = ['project', 'max', 'year', 'country', 'mortality_rate', 'id', 'continent']
     value_field = 'spent'
     ''''
@@ -97,7 +96,9 @@ def main():
     
     
     print look(tbl_out)
+    tojson(tbl_out,"mashup.json")
     tocsv(tbl_out,"mnhc-report.csv")
+    
 def mashup_combine():
     with open('mashup.json') as f:
         dat = json.loads(f.read())

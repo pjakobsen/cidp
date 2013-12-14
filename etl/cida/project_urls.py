@@ -18,6 +18,8 @@ from bs4 import BeautifulSoup
 from urllib2 import urlopen
 from pprint import pprint
 import petl
+from sqlalchemy import *
+from datetime import datetime
 
 def main():
     url_list = ["http://www.acdi-cida.gc.ca/cidaweb/cpo.nsf/vWebProjByNumEn?OpenView",
@@ -54,9 +56,21 @@ def main():
 
     table = petl.fromdicts(links)
     print petl.look(table)
+    
     table = petl.cut(table,"id","name","link")
     petl.tocsv(table, "project_links.csv")
+  
+def todb():  
+    engine = create_engine('sqlite:///../db/devdata.sqlite')
+    engine.echo = True
+    connection = engine.connect()
+    meta = MetaData()
+    meta.reflect(bind=engine)
+    for table in reversed(meta.sorted_tables):
+        print table
+    
 
 if __name__ == '__main__':
-	main()
+    todb()
+    #main()
 
