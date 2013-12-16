@@ -34,7 +34,13 @@ Data Sources
 ------------
 
 CIDA Project Browser
+--------------------
 http://www.acdi-cida.gc.ca/cidaweb/cpo.nsf/vLUOpenDataFile/PBOpenData/$file/Project%20Browser%20English.csv
+
+IATI Datastore
+--------------
+To retrieve all DFAIT records:
+http://iati-datastore.herokuapp.com/api/1/access/activity.csv?reporting-org=CA-3&stream=True
 
 ------------
 What is ETL?
