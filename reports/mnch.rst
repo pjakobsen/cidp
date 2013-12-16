@@ -77,7 +77,9 @@ Using the same method, we can now search the HPDS files.  But in the case of A03
 4. IATI Activity File
 ---------------------
 
-cat activity_ca-3.csv | grep "A035564"  we do find an activity
+cat activity_ca-3.csv | grep "A035564"  we do find an activity:
+
+
 
 
 

@@ -26,8 +26,10 @@ def create_db():
     initiative_table = Table(
         'initiative', metadata,
         Column('id',Integer,primary_key=True), 
-        Column('name', Unicode(40),unique=True, nullable=False), 
-        Column('url', Unicode(3),unique=True,nullable=False))
+        Column('name', Unicode(255),unique=True, nullable=False), 
+        Column('alternate_name', Unicode(255),unique=True, nullable=False), 
+        Column('short_name', Unicode(40),unique=True, nullable=False), 
+        Column('url', Unicode(255),unique=True,nullable=False))
 
     #See http://www.acdi-cida.gc.ca/acdi-cida/acdi-cida.nsf/eng/CAR-613134747-NVG
     project_table = Table(
@@ -41,10 +43,10 @@ def create_db():
         
     #Many to many relationships between initiatives and projects
     initiative_project_table = Table(
-        'project_intiative', metadata,
+        'initiative_project', metadata,
         Column('project_id', None, ForeignKey('project.id'),
         primary_key=True),
-        Column('intitiative_id', None, ForeignKey('initiative.id'),
+        Column('initiative_id', None, ForeignKey('initiative.id'),
         primary_key=True))        
     '''
     activity_table = Table(

@@ -38,6 +38,7 @@ def main():
     print "---------- DELETE ----", project_table.delete()
     
     stmt = project_table.insert()
+    
     for url in url_list:
         html = urlopen(url).read()
         soup = BeautifulSoup(html, "lxml")
