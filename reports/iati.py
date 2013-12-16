@@ -34,7 +34,9 @@ import os,sys
 from lxml import etree
 from lxml import objectify
 import urllib
+
 def download_organization_files():
+    #TODO: This should go in the database
     # Get a list of organizations
     url='http://www.iatiregistry.org/api/search/dataset?filetype=organisation&offset=0&limit=100'
 
@@ -48,8 +50,6 @@ def download_organization_files():
         resp = requests.get(url=url)
         data = json.loads(resp.content)
         urllib.urlretrieve(data['download_url'],"data/"+org+".xml")
-
-
 
 def organization_report():
     path = r'iati_org_xml' 

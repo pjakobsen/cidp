@@ -21,7 +21,7 @@ from urlparse import urlparse, parse_qs
 BASE_URL = "http://www.acdi-cida.gc.ca/cidaweb/cpo.nsf/vWebProjSearchEn/"
 
 def scrape_project_profile_csv(ids):
-  
+    ''' This uses the special URL ids'''
     url = BASE_URL + ids
     html = urlopen(url).read()
     soup = BeautifulSoup(html, "lxml")
@@ -88,6 +88,31 @@ def scraped_report():
         html = urlopen(url).read()
         soup = BeautifulSoup(html, "lxml")
         #amount = soup.find("a", "button_surrogate")['href']
+
+def scrape_project_ids():
+    '''
+      Get a list of MNHC ids
+    '''
+    links=[]
+    print "-------- GET A LIST OF MNHC PROJECTS BY SCRAPING DFAIT WEB SITE -------------"
+    url = "http://www.acdi-cida.gc.ca/cidaweb/cpo.nsf/fWebProjListEn?ReadForm&profile=SMNE-MNCH"
+    html = urlopen(url).read()
+    soup = BeautifulSoup(html, "lxml")
+    table = soup.find("table", {"class" : "viewtable"})
+    for row in table.findAll("a", "noline"):
+        links.append("http://www.acdi-cida.gc.ca" +  row['href'])
+    
+    ids=[]
+    f = open('mnch.ids', 'w')
+    for l in links:
+        html = urlopen(l).read()
+        soup = BeautifulSoup(html, "lxml")
+        info = soup.findAll("div", "cpodata")
+        f.write(info[0].text+"\n")
+    
+    f.close()
         
-def report():
-    scraped_report()
+        
+        
+if __name__ == '__main__':
+    scrape_project_ids()
