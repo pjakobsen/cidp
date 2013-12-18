@@ -28,8 +28,6 @@ heroku run bash
 heroku pg to see databases
 
 
-
-
 Data Sources
 ------------
 

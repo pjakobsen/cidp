@@ -79,7 +79,9 @@ Using the same method, we can now search the HPDS files.  But in the case of A03
 
 cat activity_ca-3.csv | grep "A035564"  we do find an activity:
 
+With a many to many table you can now do something like:
 
+select * from project where id in (select project_id from initiative_project where initiative_id=1)
 
 
 

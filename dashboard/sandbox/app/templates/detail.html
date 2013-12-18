@@ -1,0 +1,15 @@
+<!-- extend from base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+<h1>project details</h1>
+{% for d in details %}
+<h2>{{d.project_number}} : {{d.title}}</h2>
+<table border=1>
+	{% for key,value in d.iteritems() %}
+	<tr><td>{{key}}</td><td>{{value}}</td></tr>
+	{% endfor %}
+
+</table>
+{% endfor %}
+{% endblock %}

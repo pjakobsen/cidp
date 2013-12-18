@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Muskoka Initiative</h1>
+<table>
+{% for entry in entries %}
+
+  <tr><td>{{entry.id}} </td>
+	<td><a href={{entry.url}}>{{entry.project_name}}</a></td>
+	<td>Details: <a href=/detail/{{entry.project_number}}>{{entry.project_number}}</a></td></tr>
+
+{% endfor %}
+</table>
+{% endblock %}

@@ -20,9 +20,6 @@ from pprint import pprint
 from sqlalchemy import *
 from datetime import datetime
 
-
-
-
 def main():
     
     #engine = create_engine('sqlite:///../db/dev.sqlite')
