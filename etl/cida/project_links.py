@@ -28,6 +28,7 @@ def main():
     connection = engine.connect()
     metadata = MetaData(engine)
     project_table = Table('project', metadata, autoload=True, autoload_with=engine)
+
     
     url_list = ["http://www.acdi-cida.gc.ca/cidaweb/cpo.nsf/vWebProjByNumEn?OpenView",
     "http://www.acdi-cida.gc.ca/cidaweb/cpo.nsf/vWebProjByNumEn?OpenView&start=1001&end=2000",

@@ -87,18 +87,20 @@ def main():
     
     contrib = dict(result)
 
-    def cida_numbers(pid):
+    def cida_num(pid):
         # Just keeping this here to illustrate the use of lambda with method
-        r = lambda x: 0 if not contrib[pid] else contrib[pid]
-        return r
+        try: 
+            return contrib[pid]
+        except:
+            return 0
  
-    cfo3 = addfield(cfo2, 'commitment', lambda rec: contrib[rec['project_number']])
+    cfo3 = addfield(cfo2, 'commitment', lambda rec: cida_num(rec['project_number']))
     
     cfo3 = addfield(cfo3, 'target %', lambda rec: 0 if not rec['commitment'] else "{0:.0f}%".format((rec['total'] / rec['commitment'])*100))
     print look(cfo3)
     #commitments list by country
     #breakdown by country
-    
+    tocsv(cfo3,'/Users/peder/dev/cidp/cfo-report.csv')
     
     sys.exit()
     print "--------------The Numbers--------------"

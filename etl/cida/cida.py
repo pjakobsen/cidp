@@ -372,10 +372,6 @@ def auto_load_postrges(csvfile, ini):
     # http://pythonhosted.org/petl/0.11.1/#petl.convert
     #table = convert(table1, ('foo', 'bar', 'baz'), unicode)
     table1= convert(table)
-    #table1 = convert(table1, 'maximum_cida_contribution', 'replace', '$ ', '') # Get rid of the dollar sign
-    #table1 = convert(table1, 'maximum_cida_contribution', 'replace', ',', '') # Get rid of commas
-    #table1['maximum_cida_contribution'] = 'replace', '$ ', ''
-
     table1['start_date'] = int
     table1['fiscal_year'] = lambda year: int(year.split("/")[1])
     #table1['fiscal_year'] = int
