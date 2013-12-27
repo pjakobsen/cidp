@@ -1,0 +1,6 @@
+README.rst
+setup.py
+cidp.egg-info/PKG-INFO
+cidp.egg-info/SOURCES.txt
+cidp.egg-info/dependency_links.txt
+cidp.egg-info/top_level.txt

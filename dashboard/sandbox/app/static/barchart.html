@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<link href="d3/nv.d3.css" rel="stylesheet" type="text/css">
+<link href="d3/teststyle.css" rel="stylesheet" type='text/css'>
+<head>
+	
+</head>
+<body class='with-3d-shadow with-transitions'>
+
+	<h2 id='discrete_bar_chart'>Discrete Bar Chart</h2>
+	<div id='chart'>
+	  <svg style='height:500px'> </svg>
+	</div>
+
+  <div class='chart half' id="chart2">
+    <svg></svg>
+  </div>
+
+
+
+<script src="d3/d3.v3.js"></script>
+<script src="d3/nv.d3.min.js"></script>
+
+<script>
+
+
+var negative_test_data = new d3.range(0,3).map(function(d,i) { return {
+  key: 'Stream ' + i,
+  values: new d3.range(0,11).map( function(f,j) {
+    return { 
+             y: 10 + Math.random()*100 * (Math.floor(Math.random()*100)%2 ? 1 : -1),
+             x: j
+           }
+  })
+  };  
+});
+
+function dataFactory(seriesNum, perSeries) {
+   return new d3.range(0,seriesNum).map(function(d,i) { return {
+    key: 'Stream ' + i,
+    values: new d3.range(0,perSeries).map( function(f,j) {
+      return { 
+               y: 10 + Math.random()*100,
+               x: j
+             }
+    })
+    };  
+  });
+
+}
+
+
+
+defaultChartConfig("chart2", dataFactory(2,16), {
+  delay: 0,
+  transitionDuration:1,
+  groupSpacing: 0.2
+});
+
+
+
+function defaultChartConfig(containerId, data, chartOptions) {
+  nv.addGraph(function() {
+      var chart;
+      chart = nv.models.multiBarChart()
+        .margin({bottom: 100})
+        .transitionDuration(300)
+        ;
+
+      chart.options(chartOptions);
+      chart.multibar
+        .hideable(true);
+
+      chart.xAxis
+          .axisLabel("Current Index")
+          .showMaxMin(true)
+          .tickFormat(d3.format(',0f'));
+
+      chart.yAxis
+          .tickFormat(d3.format(',.1f'));
+
+      d3.select('#' + containerId + ' svg')
+          .datum(data)
+         .call(chart);
+
+      nv.utils.windowResize(chart.update);
+
+      chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
+
+      return chart;
+  });
+}
+
+nv.addGraph(function() {
+   var chart = nv.models.discreteBarChart()
+       .x(function(d) { return d.label })
+       .y(function(d) { return d.value })
+       .staggerLabels(true)
+       .tooltips(false)
+       .showValues(true)
+ 
+   d3.select('#chart svg')
+       .datum(exampleData())
+     .transition().duration(500)
+       .call(chart);
+ 
+   nv.utils.windowResize(chart.update);
+ 
+   return chart;
+ });
+
+var dataset = []
+d3.csv("mnhc.csv", function(data) {
+   dataset = data.map(function(d) { return [ +d["spent"], +d["year"], d["country"]]; });
+   console.log("Hello console ---------")
+   console.log(dataset[5])
+});
+
+var countsByDate = {'2000-01-01': 10};
+var dateCounts = d3.entries(countsByDate);
+dateCounts = dateCounts.sort(function(a, b) {
+    return d3.ascending(a.key, b.key);
+});
+console.log(JSON.stringify(dateCounts[0].value));
+
+
+d3.json("http://localhost:4000/static/test.json", function(data) {
+   
+   console.log("Hello jsn ---------")
+   console.log(data)
+
+});
+
+d3.json('test.json', function(json) {
+    root = json;
+    console.log('json')
+	console.log(root)
+});
+
+function exampleData() {
+return  [ 
+    {
+      key: "Cumulative Return",
+      values: [
+        { 
+          "label" : "CDS / Options" ,
+          "value" : 29.765957771107
+        } , 
+        { 
+          "label" : "Cash" , 
+          "value" : 50
+        } , 
+        { 
+          "label" : "Corporate Bonds" , 
+          "value" : 32.807804682612
+        } , 
+        { 
+          "label" : "Equity" , 
+          "value" : 296.45946739256
+        } , 
+        { 
+          "label" : "Index Futures" ,
+          "value" : 30.19434030906893
+        } , 
+        { 
+          "label" : "Options" , 
+          "value" : 98.079782601442
+        } , 
+        { 
+          "label" : "Preferred" , 
+          "value" : 13.925743130903
+        } , 
+        { 
+          "label" : "Not Available" , 
+          "value" : 5.1387322875705
+        }
+      ]
+    }
+  ];
+}
+</script>
+</body>
+</html>

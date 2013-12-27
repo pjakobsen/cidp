@@ -1,14 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Muskoka Initiative</h1>
-<table>
-{% for entry in entries %}
+<h1>Projects</h1>
+<ul>
+<li><a href="/muskoka">MNCH</li>	
 
-  <tr><td>{{entry.project_number}}</td>
-	<td>{{entry.project_name}}</td>
-	<td><a href={{entry.url}}>CIDA</a></td>
-	<td><a href=/detail/{{entry.project_number}}><img src='/static/detail.png' title={{entry.project_number}}></a></td></tr>
-
-{% endfor %}
-</table>
+</ul>
 {% endblock %}

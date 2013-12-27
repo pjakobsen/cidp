@@ -25,11 +25,7 @@ def health_query():
     for d in health_data:
         print d
     
-            
-    
-    
-    
-
+ 
 
 if __name__ == '__main__':
 	health_query()

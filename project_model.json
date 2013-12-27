@@ -1,0 +1,34 @@
+{
+    "dimensions": [
+		{"name":"browser_title"},
+		{"name":"year"},
+		{"name":"project",
+		 "attributes":["browser_title"]
+		},
+        {"name":"amount"},
+		{"name":"continent"},
+		{"name":"sector"},
+		{"name":"status"},
+		{"name":"region"},
+		{"name":"org"}
+		
+
+    ],
+
+    "cubes": [
+        {
+            "name": "projects",
+            "dimensions": ["project", "year","amount","continent","sector","region","browser_title"],
+			"measures": [
+				{"name":"amount",
+				 "label":"Amount Spent",
+				 "aggregations":["sum","min", "max","avg"]
+				}
+			
+			],
+			"levels":[]
+
+        }
+    ]
+}
+

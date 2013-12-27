@@ -3,7 +3,17 @@ from app import app,db, models
 from app import conn
 from forms import LoginForm
 from models import Webuser, ROLE_USER, ROLE_ADMIN
+import cubes
 
+MODEL_PATH = "model.json"
+DB_URL = "sqlite:///data.sqlite"
+CUBE_NAME = "irbd_balance"
+
+# Some global variables. We do not have to care about Flask provided thread
+# safety here, as they are non-mutable.
+
+workspace = None
+model = None
 
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
@@ -19,6 +29,18 @@ def index():
     print result
     entries = [{"id" : row[0], "project_number" :row[3],"project_name":row[5],"url":row[4]} for row in result.fetchall()]
     return render_template('index.html', entries=entries)
+
+@app.route("/dim")
+@app.route("/dim/<dim_name>")
+def report(dim_name=None):
+    return "Hello " + str(dim_name)
+    
+@app.route('/muskoka')
+def muskoka():
+    result=conn.execute("select * from project where id in (select project_id from initiative_project where initiative_id=1)")
+    entries = [{"id" : row[0], "project_number" :row[3],"project_name":row[5],"url":row[4]} for row in result.fetchall()]
+    return render_template('muskoka.html', entries=entries, title='Muskoka Initiative')
+
 
 @app.route('/detail/<project_number>')
 def detail(project_number):
