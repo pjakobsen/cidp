@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{title}}</h1>
+<div id="my-online-csv">csv</div>
+<script type=text/javascript>
+  $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+   console.log("------ " + $SCRIPT_ROOT)
+</script>
+
+<script type=text/javascript>
+
+	// Create a dataset with a Google Docs backend and a url to the Google Doc
+	var dataset = new recline.Model.Dataset({
+  url: 'http://localhost:4000/mnch.csv',
+  backend: 'csv'
+  });
+
+
+  dataset.fetch()
+
+  console.log(dataset)
+
+// show the data for illustrations sake
+var grid = new recline.View.Grid({
+  model: dataset
+});
+$('#my-online-csv').append(grid.el);
+</script>
+{% endblock %}

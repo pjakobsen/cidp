@@ -1,0 +1,167 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>test</title>
+	<meta name="generator" content="TextMate http://macromates.com/">
+	<meta name="author" content="Peder Jakobsen">
+	<!-- Date: 2013-12-27 -->
+	<!-- 3rd party dependencies -->
+	<script type="text/javascript" src="vendor/jquery/1.7.1/jquery.js"></script>
+	<script type="text/javascript" src="vendor/underscore/1.4.4/underscore.js"></script>
+	<script type="text/javascript" src="vendor/backbone/1.0.0/backbone.js"></script>
+	<script type="text/javascript" src="vendor/mustache/0.5.0-dev/mustache.js"></script>
+	<!-- include the backend code you need e.g. here for gdocs -->
+	<script type="text/javascript" src="http://okfnlabs.org/recline.backend.gdocs/backend.gdocs.js"></script>
+	
+	
+	<!-- Recline -->
+	<script type="text/javascript" src="recline.js"></script>
+	
+	
+	<link rel="stylesheet" href="vendor/bootstrap/2.0.2/css/bootstrap.css" />
+	
+	<!-- CSS for relevant view components - here we just have grid -->
+	<link rel="stylesheet" href="css/grid.css" />
+	<link rel="stylesheet" href="css/slickgrid.css">
+	<link rel="stylesheet" href="css/flot.css">
+	<link rel="stylesheet" href="css/map.css">
+	<link rel="stylesheet" href="css/multiview.css">
+	<link rel="stylesheet" href="css/timeline.css">
+	<!-- /Recline CSS components -->
+	
+
+</head>
+<body>
+	
+<div class="my-gdocs">gdocs should appear here</div>
+<div class="ex-1">ex-1</div>
+<div class="ex-fields">ex-1</div>
+<div class="ex-fields-2">ex-1</div>
+<script>
+var data = [
+  {id: 0, date: '2011-01-01', x: 1, y: 2, z: 3, country: 'DE', geo: {lat:52.56, lon:13.40} },
+  {id: 1, date: '2011-02-02', x: 2, y: 4, z: 24, country: 'UK', geo: {lat:54.97, lon:-1.60}},
+  {id: 2, date: '2011-03-03', x: 3, y: 6, z: 9, country: 'US', geo: {lat:40.00, lon:-75.5}},
+  {id: 3, date: '2011-04-04', x: 4, y: 8, z: 6, country: 'UK', geo: {lat:57.27, lon:-6.20}},
+  {id: 4, date: '2011-05-04', x: 5, y: 10, z: 15, country: 'UK', geo: {lat:51.58, lon:0}},
+  {id: 5, date: '2011-06-02', x: 6, y: 12, z: 18, country: 'DE', geo: {lat:51.04, lon:7.9}}
+];
+
+var dataset = new recline.Model.Dataset({
+  records: data
+});
+
+
+// (for convenience) assume availability of jquery
+// must have div with class="ex-1"
+var $el = $('.ex-1');
+
+// total number of records resulting from latest query
+$el.append('Total found: ' + dataset.recordCount + '<br />');
+$el.append('Total returned: ' + dataset.records.length);
+
+$el.append('<hr />');
+
+// get 2nd record in list (note collection indexes off 0!)
+// this is an instance of a Record object
+var record = dataset.records.at(1);
+
+// if records have an id you can get by id too ...
+// var record = dataset.records.get(record-id);
+
+// To get record attribute we use 'get'
+var recdate = record.get('date');
+
+$el.append('Date is: ' + recdate);
+$el.append('<hr />');
+
+// We can also convert the Record back to simple JS object
+var simple = record.toJSON();
+
+$el.append('<h4>Record as simple object</h4>');
+$el.append('<pre>' + JSON.stringify(simple, null, 2) + '</pre>');
+
+
+// for the async case need to put inside of done
+dataset.fetch().done(function() {
+  dataset.query({size: dataset.recordCount});
+});
+
+dataset.records.each(function(record) {
+  console.log(record.get('x') * 2);
+  $el.append(record.get('x') * 2)
+});
+$el.append("<br/>-----------------------")
+var filtered = dataset.records.filter(function(record) {
+  
+  return (record.get('z') > 4 && record.get('z') < 18);
+});
+$el.append("filtered")
+console.log(dataset.records.pluck('x'))
+
+// get all the values for a given attribute/field/column
+var xvalues = dataset.records.pluck('x');
+
+// calls toJSON on all records at once
+console.log(dataset.records.toJSON());
+
+var $el = $('.ex-fields');
+
+// Now list the Fields of this Dataset (these will have be automatically extracted from the data)
+$el.append('Fields: ');
+// Dataset.fields is a Backbone collection of Fields (i.e. record attributes)
+dataset.fields.each(function(field) {
+  $el.append(field.id + ' || ');
+});
+
+$el.append('<hr />');
+
+// Show all field info
+var json = dataset.fields.toJSON();
+$el.append(
+  $('<pre />')
+    .append(
+      JSON.stringify(json, null, 2)
+    )
+);
+
+var $el = $('.ex-fields-2');
+
+dataset.fields.models[6] = new recline.Model.Field({
+  id: 'geo',
+  label: 'Location',
+  type: 'geo_point'
+});
+var rec = dataset.records.at(0);
+$el.append(record.summary());
+
+// Create a dataset with a Google Docs backend and a url to the Google Doc
+var dataset = new recline.Model.Dataset({
+  url: 'https://docs.google.com/spreadsheet/ccc?key=0Aon3JiuouxLUdGZPaUZsMjBxeGhfOWRlWm85MmV0UUE#gid=0',
+  backend: 'gdocs'
+});
+
+// Optional - display the results in a grid
+// Note how we can set this up before any data has arrived
+// Views will listen for query completion and update themselves automatically
+var grid = new recline.View.Grid({
+  model: dataset
+});
+
+
+$('.my-gdocs').append(grid.el);
+
+// Now do the query to the backend to load data
+dataset.fetch().done(function(dataset) {
+  if (console) {
+    console.log(dataset.records);
+  }
+});
+
+</script>
+
+</body>
+</html>
