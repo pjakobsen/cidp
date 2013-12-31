@@ -5,6 +5,7 @@ cida.py
 Created by Peder Jakobsen on 2013-11-05.
 
 """
+import os
 import sys
 import csv
 from pprint import pprint
@@ -15,6 +16,10 @@ import psycopg2
 import ConfigParser
 import messytables
 
+
+home = os.path.expanduser("~")
+data_dir = home+'/dev/cidp/data/'
+hpds_dir =data_dir+'/hpds/'
 
 fieldmap = {'Fiscal year': 'year',
  'Project number': 'project',
@@ -49,18 +54,6 @@ def project_browser():
      #    print look(joined, 30)
      #    pprint(header(joined))
 
-
-def combine_hpds():
-  	# Combine HPDS files
-    f = open("HDPS-2005-2012-eng.csv", "w")
-    for subdir, dirs, files in os.walk("data/hdps"):
-        for file in files:
-            
-            tempfile=open("data/hdps/" + file,'r')
-            
-            f.write(tempfile.read())
-            tempfile.close()
-    f.close()
 
 def project_id_sets():
     browser = project_browser()
@@ -400,6 +393,11 @@ def auto_load_postrges(csvfile, ini):
         print e.pgerror
         print e
 
+def list_files(source):
+    print  "------ {} files ------".format(source)
+    bashCommand = "tree " + data_dir
+    print  bashCommand
+    os.system(bashCommand)
 
 def main():
     print "Use me when it's time to run everything in crontab"   
