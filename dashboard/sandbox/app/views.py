@@ -29,6 +29,8 @@ def login():
 @app.route('/')       
 @app.route('/index')
 def index():
+    return render_template('index.html')
+def index2():
     result=conn.execute("select * from project where id in (select project_id from initiative_project where initiative_id=1)")
     print result
     entries = [{"id" : row[0], "project_number" :row[3],"project_name":row[5],"url":row[4]} for row in result.fetchall()]
