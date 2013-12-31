@@ -13,8 +13,11 @@
 
 	// Create a dataset with a Google Docs backend and a url to the Google Doc
 	var dataset = new recline.Model.Dataset({
-  url: '/static/data/mnch.csv',
-  backend: 'csv'
+  //url: '/static/data/mnch.csv',
+	url:'https://docs.google.com/spreadsheet/pub?key=0AjcBMksBg7kEdDFDQi01ZHI3Mk54QlRKbThWOFMzWkE&output=csv',
+  //backend: 'csv'
+	backend: 'csv'
+
   });
 
 
