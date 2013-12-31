@@ -9,7 +9,6 @@ WTForms==1.0.5
 Werkzeug==0.9.4
 beautifulsoup4==4.3.2
 chardet==2.1.1
--e git+https://github.com/pjakobsen/cidp.git@8c6a59da60da6c14b618ff870d6c8a3160717d87#egg=cidp-master
 cubes==0.10.2
 decorator==3.4.0
 itsdangerous==0.23
