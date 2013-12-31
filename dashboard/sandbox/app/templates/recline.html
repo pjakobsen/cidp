@@ -1,29 +1,46 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>{{title}}</h1>
-<div id="my-online-csv">csv</div>
+<h3>{{title}}</h3>
+<p>Maternal, Newborn, and Child Health Initiative</p>
+<div id="mygrid" style="height: 600px"></div>
 <script type=text/javascript>
   $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
    console.log("------ " + $SCRIPT_ROOT)
 </script>
+{% include "js-css.html" %}
 
 <script type=text/javascript>
 
 	// Create a dataset with a Google Docs backend and a url to the Google Doc
 	var dataset = new recline.Model.Dataset({
-  url: 'http://localhost:4000/mnch.csv',
+  url: 'http://localhost:4000//data/mnch.csv',
   backend: 'csv'
   });
 
 
   dataset.fetch()
 
-  console.log(dataset)
+var options = {
+    enableCellNavigation: true,
+    enableColumnReorder: true
+  };
+function formatter(row, cell, value, columnDef, dataContext) {
+        return value;
+    }
+var columns = [
+	{id: "year", name: "The Year", field: "Year", width: 620},
+    {id: "title", name: "The Title", field: "title", width: 620}
+  ];
 
-// show the data for illustrations sake
-var grid = new recline.View.Grid({
-  model: dataset
+var $el = $('#mygrid');
+var grid = new recline.View.SlickGrid({
+  model: dataset,
+  el: $el,
+  options:options,
+  columns:columns
+
 });
-$('#my-online-csv').append(grid.el);
+grid.visible = true;
+grid.render();
 </script>
 {% endblock %}

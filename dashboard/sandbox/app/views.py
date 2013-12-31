@@ -1,5 +1,5 @@
 # encoding: utf-8
-from flask import render_template, flash, redirect,jsonify, Response
+from flask import render_template, flash, redirect,jsonify, Response,url_for
 from app import app,db, models
 from app import conn
 from forms import LoginForm
@@ -52,16 +52,19 @@ def generate_full_csv():
     table = fromdb(conn, sql)
 
     def generate():
-        yield  fields+"\n"
+        yield  "Year, Code, title, Country, Max, Spent\n"
 
         for row in iterdata(table):
             print row
             l = [unicode(x).encode('utf-8','xmlcharrefreplace') for x in list(row)]
-            line =  ','.join(l)
-            yield line + '\n'
+            line =  '","'.join(l)
+            yield '"' + line + '"\n'
     return Response(generate(), mimetype='text/html')
     
-
+@app.route('/data/mnch.csv')
+def static_csv():
+     return redirect(url_for('static', filename='data/mnch.csv'))
+    
 def mnch():
     sql = "select * from project where id in (select project_id from initiative_project where initiative_id=1)"
     table = fromdb(conn, sql)
