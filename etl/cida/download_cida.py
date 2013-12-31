@@ -33,13 +33,27 @@ def save_file(url,filename):
         raise
     finally:
         print "---- OK ----"
-    
-save_file("http://www.acdi-cida.gc.ca/cidaweb/cpo.nsf/vLUOpenDataFile/PBOpenData/\$file/Project%20Browser%20English.csv","browser.csv")
-save_file("http://www.acdi-cida.gc.ca/INET/IMAGES.NSF/vLUImages/Open%20Data/\$file/HPDS-2011-2012-eng.csv","hpds-2012.csv")
-save_file("http://www.acdi-cida.gc.ca/INET/IMAGES.NSF/vLUImages/Open%20Data/\$file/HPDS-2010-2011-eng.csv","hpds-2011.csv")
-save_file("http://www.acdi-cida.gc.ca/INET/IMAGES.NSF/vLUImages/Open%20Data/\$file/HPDS-2009-2010-eng.csv","hpds-2010.csv")
-save_file("http://www.acdi-cida.gc.ca/INET/IMAGES.NSF/vLUImages/Open%20Data/\$file/HPDS-2008-2009-eng.csv","hpds-2009.csv")
-save_file("http://www.acdi-cida.gc.ca/INET/IMAGES.NSF/vLUImages/Open%20Data/\$file/HPDS-2007-2008-eng.csv","hpds-2008.csv")
-save_file("http://www.acdi-cida.gc.ca/INET/IMAGES.NSF/vLUImages/Open%20Data/\$file/HPDS-2006-2007-eng.csv","hpds-2007.csv")
-save_file("http://www.acdi-cida.gc.ca/INET/IMAGES.NSF/vLUImages/Open%20Data/$file/HPDS-2005-2006-eng.csv", "hpds-2006.csv")
 
+
+def combine_hpds():
+    # Combine HPDS files
+    f = open(hpds_dir+"HDPS-2005-2012-eng.csv", "w")
+    for subdir, dirs, files in os.walk(hpds_dir):
+        for file in files:
+            sourcefile=open(subdir+ file,'r')
+            f.write(sourcefile.read())
+            sourcefile.close()
+    f.close()
+
+def save_files():   
+    save_file("http://www.acdi-cida.gc.ca/cidaweb/cpo.nsf/vLUOpenDataFile/PBOpenData/\$file/Project%20Browser%20English.csv","browser.csv")
+    save_file("http://www.acdi-cida.gc.ca/INET/IMAGES.NSF/vLUImages/Open%20Data/\$file/HPDS-2011-2012-eng.csv","hpds-2012.csv")
+    save_file("http://www.acdi-cida.gc.ca/INET/IMAGES.NSF/vLUImages/Open%20Data/\$file/HPDS-2010-2011-eng.csv","hpds-2011.csv")
+    save_file("http://www.acdi-cida.gc.ca/INET/IMAGES.NSF/vLUImages/Open%20Data/\$file/HPDS-2009-2010-eng.csv","hpds-2010.csv")
+    save_file("http://www.acdi-cida.gc.ca/INET/IMAGES.NSF/vLUImages/Open%20Data/\$file/HPDS-2008-2009-eng.csv","hpds-2009.csv")
+    save_file("http://www.acdi-cida.gc.ca/INET/IMAGES.NSF/vLUImages/Open%20Data/\$file/HPDS-2007-2008-eng.csv","hpds-2008.csv")
+    save_file("http://www.acdi-cida.gc.ca/INET/IMAGES.NSF/vLUImages/Open%20Data/\$file/HPDS-2006-2007-eng.csv","hpds-2007.csv")
+    save_file("http://www.acdi-cida.gc.ca/INET/IMAGES.NSF/vLUImages/Open%20Data/$file/HPDS-2005-2006-eng.csv", "hpds-2006.csv")
+
+if __name__ == '__main__':
+    combine_hpds()

@@ -405,13 +405,15 @@ def main():
     print "Use me when it's time to run everything in crontab"   
     
 if __name__ == '__main__':
-    create_postgres_table("../cida.ini")
+    #create_postgres_table("../cida.ini")
     #merge_and_join()
 	#joined_report()
 	#manual_count()
 
-    #combine_hpds()
+    combine_hpds()
     # May need to run 
+    bashCommand = "cwm --rdf test.rdf --ntriples > test.nt"
+    os.system(bashCommand)
     print "did you use: iconv -f ASCII -t utf-8//IGNORE fixed_merge.csv >  fixed_chars.csv"
     auto_load_postrges('data/fixed_chars.csv','../cida.ini')
 
