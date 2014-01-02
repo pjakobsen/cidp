@@ -414,8 +414,8 @@ def load_hpds(csvfile, ini):
 
 
     table1 = addcolumn(table1, 'browser_id', id_col)
-    table1=cut(table1, 'project_number','browser_id')
-    print look(table1, 40000,50000)
+    table2=cut(table1, 'project_number','browser_id')
+    print look(table2, 40000,50000)
     
     try:
         con = psycopg2.connect(database=db, user=user) 

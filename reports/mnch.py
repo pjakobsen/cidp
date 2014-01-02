@@ -35,26 +35,61 @@ Aniket
 
 import sys
 import os
-from sqlalchemy import *
-#from sqlalchemy.orm import sessionmaker
+import psycopg2
+import csv
 
 
 
 def main():
-	# Connect to the database so we can ask questions
-    engine = create_engine('postgres://localhost/crs')
-    #engine.echo = True
-    metadata = MetaData(engine)
-    project_table = Table('project', metadata, autoload=True, autoload_with=engine)
-    metadata.reflect(engine)
-    print metadata.tables.keys()
-    stmt = project_table.select(project_table.c.id=='1')
-    print stmt.execute().fetchall()   
-    sql = 'select * from project'
-    result = engine.execute(sql)
-    for  r in result.fetchall()[0:20]:
-        print r
+    # migrate table with pg_dump -t table_to_copy source_db | psql target_db
+    try:
+        
+       
+    	# Connect to the database so we can ask questions
+        db='cidp'
+        user='cidp_admin'
+        con = psycopg2.connect(database=db, user=user) 
+        cur = con.cursor()
+        
+         # Get a list of mnhc projects
+        cur.execute( "select full_project_number, project_name,url from project where id in (select project_id from initiative_project where initiative_id=1)")
+        mnhc_ids=[]
+        report = []
+        report.append(('Project Number','Maximum Contribution', 'Amount Spent'  ,'Project Title', 'Project URL'))
+        for r in cur.fetchall():
+  
+            id = r[0] 
+  
+            sql="select maximum_cida_contribution, sum(amount_spent) from hpds where project_number = '%s' group by maximum_cida_contribution" % id
+            
+            cur.execute(sql)
+            d = cur.fetchone()
+            if d:
+                max_contrib, amount_spent = d
+            
+            
+            sql="select amount, region from projects where project = '%s'" % id
 
+            cur.execute(sql)
+            commitment = cur.fetchone()
+            
+            record = (id,max_contrib, float(amount_spent)  ,r[1],r[2])
+            report.append(record)
+
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e    
+        #sys.exit(1)
+
+    finally:
+        pass
+    ''' Here it would be good to keep a log file '''
+   
+    
+    print report
+    with open('report.csv','w') as out:
+        csv_out=csv.writer(out)
+        for row in report:
+            csv_out.writerow(row)
     
 
 if __name__ == '__main__':
