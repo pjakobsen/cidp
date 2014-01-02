@@ -36,12 +36,32 @@ def save_file(url,filename):
 
 
 def combine_hpds():
+    print 'this has been replaced by .sh script'
+    # Essential to avoid UTF errors from the database
+    bashCommand = "iconv -f ASCII -t utf-8//IGNORE {} > {}".format(hpds_dir+'HDPS-2005-2012-eng.csv',hpds_dir+'HDPS-2005-2012-fixed.csv')
+    print  bashCommand
+    #os.system(bashCommand)
+    sys.exit()
     # Combine HPDS files
     f = open(hpds_dir+"HDPS-2005-2012-eng.csv", "w")
+    first_file_written=False
     for subdir, dirs, files in os.walk(hpds_dir):
         for file in files:
             sourcefile=open(subdir+ file,'r')
-            f.write(sourcefile.read())
+            
+            # remove the two first lines from any files except the first one
+            if first_file_written:
+                #The first file has been written
+                #TOOOOO SLLOOOOOOOOOOW
+                #lines = open(sourcefile).readlines()
+                #f.writelines(lines[2:0])
+                
+            else:
+                # It must be the first file
+                f.write(sourcefile.read())
+                first_file_written=True
+                
+           
             sourcefile.close()
     f.close()
 
@@ -53,7 +73,7 @@ def save_files():
     save_file("http://www.acdi-cida.gc.ca/INET/IMAGES.NSF/vLUImages/Open%20Data/\$file/HPDS-2008-2009-eng.csv","hpds-2009.csv")
     save_file("http://www.acdi-cida.gc.ca/INET/IMAGES.NSF/vLUImages/Open%20Data/\$file/HPDS-2007-2008-eng.csv","hpds-2008.csv")
     save_file("http://www.acdi-cida.gc.ca/INET/IMAGES.NSF/vLUImages/Open%20Data/\$file/HPDS-2006-2007-eng.csv","hpds-2007.csv")
-    save_file("http://www.acdi-cida.gc.ca/INET/IMAGES.NSF/vLUImages/Open%20Data/$file/HPDS-2005-2006-eng.csv", "hpds-2006.csv")
+save_file("http://www.acdi-cida.gc.ca/INET/IMAGES.NSF/vLUImages/Open%20Data/$file/HPDS-2005-2006-eng.csv", "hpds-2006.csv")
 
 if __name__ == '__main__':
     combine_hpds()

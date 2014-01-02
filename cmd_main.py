@@ -16,10 +16,11 @@ class MyPrompt(Cmd):
         print "Quitting."
         raise SystemExit
 
-    def do_load_db(self, args):
-        """ Load CIDA """
-        print cida
-        cida.bash_test()
+    def do_load(self, source):
+        """ Load CIDA data 
+            [hpds]"""
+        if source == "hpds":
+            cida.load_db(source)
 
 
     def do_files(self, source):

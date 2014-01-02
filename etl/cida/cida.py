@@ -14,27 +14,36 @@ from petl.fluent import etl
 import sqlite3
 import psycopg2
 import ConfigParser
-import messytables
+from datetime import datetime, date
+from decimal import Decimal
+from psycopg2.extras import LoggingConnection
+from psycopg2.extras import LoggingCursor
+
 
 
 home = os.path.expanduser("~")
 data_dir = home+'/dev/cidp/data/'
 hpds_dir =data_dir+'/hpds/'
 
-fieldmap = {'Fiscal year': 'year',
- 'Project number': 'project',
- 'Status': 'status',
- 'Maximum CIDA contribution (project-level)': 'cida_contrib',
- 'Organisation name': 'org',
- 'Continent name': 'continent',
- 'Project Browser country ID': 'br_country_id',
- 'Country/region name': 'region',
- 'Country/region percent': 'region_percent',
- 'Sector name': 'sector',
- 'Sector ID': 'sector_id',
- 'Sector percent': 'sector_percent',
- 'Amount spent': 'amount'}
-
+create_browser_table_sql = '''
+CREATE TABLE browser (
+    id integer NOT NULL,
+    project_number text,
+    date_modified text,
+    title text,
+    description text,
+    status text,
+    start_date text,
+    end_date text,
+    country text,
+    executing_agency_partner text,
+    cida_sector_of_focus text,
+    dac_sector text,
+    maximum_cida_contribution text,
+    expected_results text,
+    progress_and_results_achieved text
+);
+'''
 
 def project_browser():
      rawfile = fromcsv(csvfiles['browser'])
@@ -60,19 +69,8 @@ def project_id_sets():
     print rowcount(browser)
     print rowcount(unique(browser,'project'))
 
-def messy_guess():
-    # guess column types using messytables.
-    # this is not useful when every field is a string
-    fh = open('data/fixed_merge.csv', 'rb')
-    table_set = messytables.CSVTableSet(fh)
-    # A table set is a collection of tables:
-    row_set = table_set.tables[0]
-    print row_set.sample.next()
-    types = messytables.type_guess(row_set.sample, strict=True)
-    
-    pprint(types)   
 
-def load_postrges():
+def load_browser_postrges():
     '''
     Set up DB to run queries like:
     
@@ -101,15 +99,17 @@ def load_postrges():
     table = select(table, 'amount', lambda v: v != '')
     for d in iterdata(table,0,1):
         if d[13]: print d
-        
+
+    
+    # Add table
+    
+
     print(look(tail(table)))
-    
-    
-    create_postgres_table()
+
     try:
         todb(table, con, table_name)
         print "-------------- Load OK: Testing one record -------------"
-        cur.execute('SELECT * from projects where project_id=10000')
+        cur.execute('SELECT * from browser where project_id=10000')
         r  = cur.fetchone()
         print r
 
@@ -288,116 +288,170 @@ def merge_and_join():
     # Compare sizes
     print rowcount(b1),rowcount(h1),rowcount(joined)
 
-def create_postgres_table(ini):
 
-    config = ConfigParser.RawConfigParser()
-    # dont' change  names to lower case
-    config.optionxform = str
-    config.read(ini)
-    for name, type in config.items('FieldMap'):
-        print type.split(" ")
-   
-    sql_fields = [type for (name,type) in config.items('FieldMap') if type != "DROP"]
-    print sql_fields
-
-    db= config.get("DataStore","db")
-    user= config.get("DataStore","db_user")
-    table_name = config.get("DataStore","db_table")
-    print db,user,table_name
-    
-    try:
-        con = psycopg2.connect(database=db, user=user) 
-        #con = psycopg2.connect(database='cidp_dev', user='cidp') 
-        #con.autocommit = True
-        cur = con.cursor()
-        
-        # see if the table exists
-        try:
-            cur.execute("select * from information_schema.tables where table_name=%s", ('cida',))
-            if bool(cur.rowcount):
-                # drop table
-                print "---------- Dropping table -----------"
-                cur.execute("DROP TABLE cida")
-                
-        except:
-            pass
-            
-        cur.execute("SET CLIENT_ENCODING TO 'iso-8859-1'")
-        print cur
-        cur.execute('SELECT version()')  
-        print cur.fetchone()
-
-        sql = "CREATE TABLE cida (id SERIAL PRIMARY KEY," + ", ".join(sql_fields) + " );"
-        cur.execute(sql)
-        #Not needed since automcommit is set to true: con.commit()
-        con.commit()
-    except Exception, e:
-
-        print e.pgerror
-
-def auto_load_postrges(csvfile, ini):
+def load_browser(csvfile, ini):
     
     table = fromcsv(csvfile)
+    table=skip(table, 1)
     print len(header(table))
+    pprint (header(table))
     # remove rows without title or amount
     #table = select(table, 'browser_title', lambda v: v != '')
     #table = select(table, 'amount', lambda v: v != '')
     config = ConfigParser.RawConfigParser()
-    # dont' change  names to lower case
+    # dont' change  names to lower case.  IMPORTANT!!!!!
     config.optionxform = str
     config.read(ini)
-    print "--------- Removing Fields and renaming ----------"
+    db= config.get("DataStore","db")
+    user= config.get("DataStore","db_user")
 
-    for name, type in config.items('FieldMap'):
+    print "--------- Removing Fields and renaming ----------"
+    
+    for name, type in config.items('browser_FieldMap'):
         new = type.split(" ")[0]
-        if type == "DROP":
-            print name
+        if type == "EXCLUDE":
+            print "EXCLUDING ", name
             table = cutout(table, name)
             
         else:
+            print "RENAMING ", name, " TO ", new
             table = rename(table, name, new)
-    #FIXME
-    table = cutout(table, "status")
-    pprint (header(table))    
+    
+    # http://pythonhosted.org/petl/0.11.1/#petl.convert
+    #table = convert(table1, ('foo', 'bar', 'baz'), unicode)
+    table1= convert(table)
+    print look(cut(table1 ,"end_date", "maximum_cida_contribution"))
     print "--------- Renaming Done  ----------"  
+    table1['start_date'] = lambda y: date(int(y),1,1).strftime("%Y-%m-%d")
+    table1['end_date'] = lambda y: date(int(y),1,1).strftime("%Y-%m-%d")
+    table1['maximum_cida_contribution'] = lambda a: Decimal(a.lstrip("$ ").replace(",","")).quantize(Decimal("0.00"))
 
+ 
+    print look(cut(table1,"end_date", "maximum_cida_contribution"))
+
+    try:
+        con = psycopg2.connect(database=db, user=user) 
+        cur = con.cursor()
+
+        ''' Petl Note: The database table will be truncated, 
+            i.e., all existing rows will be deleted prior to inserting the new data.
+        '''
+        todb(table1, con, 'browser')  
+
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e    
+        sys.exit(1)
+    
+    finally:
+        pass
+    ''' Here it would be good to keep a log file '''
+    cur.execute('select count(*) from browser;')
+    print "Number of records loaded :", cur.fetchone()
+    print "-------------- Load OK   -------------"
+    con.close()
+        
+
+def load_hpds(csvfile, ini):
+
+    table = fromcsv(csvfile)
+    # Don't need this , the .sh handles it - table=skip(table, 1)
+    print len(header(table))
+    pprint (header(table))
+    # remove rows without title or amount
+    #table = select(table, 'browser_title', lambda v: v != '')
+    #table = select(table, 'amount', lambda v: v != '')
+    config = ConfigParser.RawConfigParser()
+    # dont' change  names to lower case.  IMPORTANT!!!!!
+    config.optionxform = str
+    config.read(ini)
+    db= config.get("DataStore","db")
+    user= config.get("DataStore","db_user")
+
+    print "--------- Removing Fields and renaming ----------"
+
+    for name, type in config.items('hpds_FieldMap'):
+        new = type.split(" ")[0]
+        if type == "EXCLUDE":
+            print "EXCLUDING ", name
+            table = cutout(table, name)
+
+        else:
+            print "RENAMING ", name, " TO ", new
+            table = rename(table, name, new)
 
     # http://pythonhosted.org/petl/0.11.1/#petl.convert
     #table = convert(table1, ('foo', 'bar', 'baz'), unicode)
     table1= convert(table)
-    table1['start_date'] = int
-    table1['fiscal_year'] = lambda year: int(year.split("/")[1])
-    #table1['fiscal_year'] = int
-    table1['end_date'] = int
-    table1['maximum_cida_contribution'] = float
-    table1['amount_spent'] = float
-    table1['untied_amount'] = float
- 
-    print look(cut(table1,"fiscal_year", "maximum_cida_contribution"),1000,1200)
+    
+    
+    print "--------- Renaming Done  ----------"  
+    
+    table1['fiscal_year'] = lambda y: date(int(y.split("/")[1]),1,1).strftime("%Y-%m-%d")
+    table1['maximum_cida_contribution'] = lambda a: 0 if a=='' else a
+    table1['amount_spent'] = lambda a: 0 if a=='' else a
 
-    db= config.get("DataStore","db")
-    user= config.get("DataStore","db_user")
-    table_name = config.get("DataStore","db_table")
+    print look(cut(table1,"fiscal_year","project_number", "amount_spent"))
+    con = psycopg2.connect(database=db, user=user) 
+    cur = con.cursor()
+    it = iterdata(table1)
+    #build a column
+    id_col = []
+    for n,i in enumerate(it):
+        
+        id = i[1]
+        #print id
+        sql="select id from browser where project_number='%s'" % id
+        #print sql
+        cur.execute(sql)
+        #cur.execute("SELECT id from browser where project_number='%s'" % id)
+        result = cur.fetchone()
+        if result: 
+            print n, result[0]
+            id_col.append(result[0])
+        else:
+            id_col.append(None)
+        
+
+    addcolumn(table1, 'browser_id', id_col)
+    print look(table1)
+    
     try:
-        print db,user,table_name
         con = psycopg2.connect(database=db, user=user) 
-
         cur = con.cursor()
-        todb(table1, con, 'cida')
-        print "-------------- Load OK: Testing one record -------------"
-        cur.execute('SELECT * from cida where id=10000')
-        r  = cur.fetchone()
-        print r
+        ''' Petl Note: The database table will be truncated, 
+            i.e., all existing rows will be deleted prior to inserting the new data.
+        '''
+        todb(table1, con, 'hpds')  
 
-    except Exception, e:
-        print e.pgerror
-        print e
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e    
+        #sys.exit(1)
+
+    finally:
+        pass
+    ''' Here it would be good to keep a log file '''
+    cur.execute('select count(*) from hpds;')
+    print "Number of records loaded :", cur.fetchone()
+    print "-------------- Load OK   -------------"
+    con.close()
 
 def list_files(source):
     print  "------ {} files ------".format(source)
     bashCommand = "tree " + data_dir
     print  bashCommand
     os.system(bashCommand)
+
+def load_db(source):
+    print "-------  Load DB ---------"
+    if source == "hpds":
+        try:
+            
+            load_hpds(hpds_dir+'final_fixed_chars.csv','../cida.ini')
+        except:
+            raise
+            
+    else:
+        load_browser(data_dir+'browser.csv','../cida.ini')
 
 def main():
     print "Use me when it's time to run everything in crontab"   
@@ -408,12 +462,12 @@ if __name__ == '__main__':
 	#joined_report()
 	#manual_count()
 
-    combine_hpds()
+    #combine_hpds()
     # May need to run 
-    bashCommand = "cwm --rdf test.rdf --ntriples > test.nt"
-    os.system(bashCommand)
+
     print "did you use: iconv -f ASCII -t utf-8//IGNORE fixed_merge.csv >  fixed_chars.csv"
-    auto_load_postrges('data/fixed_chars.csv','../cida.ini')
+    #load_db('browser')
+    load_db('hpds')
 
 
 
