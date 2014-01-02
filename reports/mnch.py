@@ -55,7 +55,7 @@ def main():
         cur.execute( "select full_project_number, project_name,url from project where id in (select project_id from initiative_project where initiative_id=1)")
         mnhc_ids=[]
         report = []
-        report.append(('Project Number','Maximum Contribution', 'Amount Spent'  ,'Project Title', 'Project URL'))
+        report.append(('Project Number','Maximum Contribution', 'Amount Spent'  ,'Project URL'))
         for r in cur.fetchall():
   
             id = r[0] 
