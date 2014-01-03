@@ -1,20 +1,19 @@
 {% extends "base.html" %}
 {% block content %}
 <h3>{{title}}</h3>
-<p>Maternal, Newborn, and Child Health Initiative</p>
-<div id="mygrid" style="height: 600px"></div>
-<script type=text/javascript>
-  $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-   console.log("------ " + $SCRIPT_ROOT)
-</script>
+<h3 id="dsource" style="visibility:hidden">{{data}}</h3>
+<p id="stats" >Number of records: </p>
+
+<div id="mygrid" style="height: 1000px; width:100%"></div>
+	
 {% include "js-css.html" %}
 
 <script type=text/javascript>
-
+	var datasource =  $('#dsource').text()
+	//alert(datasource)
 	// Create a dataset with a Google Docs backend and a url to the Google Doc
 	var dataset = new recline.Model.Dataset({
-	//url:'https://docs.google.com/spreadsheet/pub?key=0AjcBMksBg7kEdDFDQi01ZHI3Mk54QlRKbThWOFMzWkE&output=csv',
-	url:'https://docs.google.com/spreadsheet/pub?key=0AjcBMksBg7kEdHRrZXc3TG1qUHBZekdPdXdvX1BodUE&single=true&gid=0&output=csv',
+	url:datasource,
 	backend: 'csv'
 
   });
@@ -22,26 +21,33 @@
 
   dataset.fetch()
 
-var options = {
-    enableCellNavigation: true,
-    enableColumnReorder: true,
-  };
-function formatter(row, cell, value, columnDef, dataContext) {
-        return value;
-    }
-var columns = [
-	{id: "year", name: "The Year", field: "Year", width: 620},
-    {id: "title", name: "The Title", field: "title", width: 620}
-  ];
-
+options = {
+        enableCellNavigation: true,
+        enableColumnReorder: false,
+        multiColumnSort: true,
+		autoHeight: true,
+        asyncEditorLoading: true,
+        forceFitColumns: true // this one is important        
+    };
 var $el = $('#mygrid');
 var grid = new recline.View.SlickGrid({
   model: dataset,
   el: $el,
-  options:options
+  state: { gridOptions:options}
+
   
 });
+
 grid.visible = true;
 grid.render();
+
+var $stats = $('#stats');
+dataset.fetch().done(function() {
+	$stats.append(dataset.recordCount)
+	$stats.append(", Total returned " + dataset.records.length)
+  //$stats.append(dataset.query({size: dataset.recordCount}));
+});
+
+
 </script>
 {% endblock %}

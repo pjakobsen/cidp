@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>{{title}}</h3>
+<h3 id="dsource"  style="visibility: hidden">{{data}}</h3>
+<p id="stats">Number of records: </p>
+
+<div id="mygraph"></div>
+
+
+
+{% include "js-css.html" %}
+<script type="text/javascript" src="/static/vendor/flot/0.7/jquery.flot.js"></script>
+<script type="text/javascript" src="static/recline/view.graph.js"></script>
+<link rel="stylesheet" href="/static/css/flot.css">
+<script type=text/javascript>
+	var datasource =  $('#dsource').text()
+
+	// Create a dataset with a Google Docs backend and a url to the Google Doc
+	var dataset = new recline.Model.Dataset({
+	url:datasource,
+	backend: 'csv'
+
+  });
+
+
+  dataset.fetch()
+
+
+
+
+
+var $stats = $('#stats');
+dataset.fetch().done(function() {
+	$stats.append(dataset.recordCount)
+	$stats.append(", Total returned " + dataset.records.length)
+  //$stats.append(dataset.query({size: dataset.recordCount}));
+});
+
+
+var $el = $('#mygraph');
+var graph = new recline.View.Graph({
+  model: dataset,
+  
+  state: {
+    group: "Project Title",
+    series: ["Maximum Contribution","Amount Spent"],
+	graphType: 'bars',
+	
+  }
+});
+$el.append(graph.el);
+graph.render();
+graph.redraw();
+
+</script>
+{% endblock %}

@@ -29,7 +29,8 @@ def login():
 @app.route('/')       
 @app.route('/index')
 def index():
-    return render_template('index.html')
+    #return render_template('index.html')
+    return redirect(url_for('static', filename='index.html'))
 def index2():
     result=conn.execute("select * from project where id in (select project_id from initiative_project where initiative_id=1)")
     print result
@@ -71,21 +72,36 @@ def mnch():
     sql = "select * from project where id in (select project_id from initiative_project where initiative_id=1)"
     table = fromdb(conn, sql)
     table = cut(table, 'id','project_number')
-    foo =''
-    tocsv(table)
-    return foo
-    
-    print "=====99999999999====="
-    print foo
     return tocsv(table)
-   
     entries = [{"id" : row[0], "project_number" :row[3],"project_name":row[5],"url":row[4]} for row in result.fetchall()]
     return jsonify(result=entries) 
 
-@app.route('/muskoka')
-def muskoka():
-    return render_template('recline.html', title='Muskoka Initiative')
+@app.route('/mnch')
+@app.route('/mnch/<viz_type>')
+def mnch(viz_type='table'):
+    d ='https://docs.google.com/spreadsheet/pub?key=0AjcBMksBg7kEdHRrZXc3TG1qUHBZekdPdXdvX1BodUE&single=true&gid=0&output=csv'
+    if viz_type=='table':
+        return render_template('recline.html',
+        title='Maternal, Newborn, and Child Health Initiative - Table',
+        data=d
+        )
+    elif viz_type == 'graph':
+        return render_template('recline_graph.html',
+        title='Maternal, Newborn, and Child Health Initiative - Graph',
+        data=d
+        )
+    else: 
+        return  "error"
+   
+@app.route('/browser')
+def browser():
+    return render_template('recline_all.html', title='All Projects',
+ datasource='https://docs.google.com/spreadsheet/pub?key=0AjcBMksBg7kEdG8ycU15bC1WRU9OYkhmbzBxaXIyd1E&single=true&gid=0&output=csv')
 
+@app.route('/agencies')
+def agencies():
+    return render_template('recline.html', title='Agency Involvment',
+    data='https://docs.google.com/spreadsheet/pub?key=0AjcBMksBg7kEdG8ycU15bC1WRU9OYkhmbzBxaXIyd1E&single=true&gid=0&output=csv')
 
 @app.route('/detail/<project_number>')
 def detail(project_number):
