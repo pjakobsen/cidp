@@ -1,0 +1,40 @@
+"""
+MUST FIX CRS FILES 
+
+From   http://nerdbynature.de/s9y/?176
+
+-
+
+$ cat /tmp/foo
+ÿs
+$ tr -d \r < /tmp/foo 
+tr: Illegal byte sequence
+Whoops? Let's take a closer look:
+$ od -x /tmp/foo 
+0000000      73ff    0a0d
+0000004
+So, it's some unicode character (0xff), a small "s" (0x74), then a CR (0x0d, which I'm trying to remove) and a newline (0x0a) at the end. Turns out it's how MacOS 10.6 handles unicode characters. Specifying a different locale seems to help:
+$ LC_CTYPE=C tr -d \r < /tmp/foo 
+ÿs
+
+
+===========
+
+I did:
+
+LC_CTYPE=C tr -d '\000' < crs_2012.csv > fix.csv
+
+
+Beginning of file still has :  '\xff\xfeYear|donorcode|donorname|agencycode|agencyname|crsid|projectnumber
+
+
+Try this:   LC_CTYPE=C tr -d '\xff\xf' < fix.csv > fix2.csv
+
+
+Grep does not like UTF-16 so do:
+
+iconv -f utf-16 -t utf-8 CRS_2012_data.csv | grep "Canada" > canada_2012.csv
+
+
+
+'''

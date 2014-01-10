@@ -1,0 +1,442 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- ——————————————————————————————————————————————————————————————————— META -->
+  <title>NSI Data Explorer</title>
+  <meta charset="utf-8">
+  <meta name="description" content="NSI Data Explorer.">
+  <!-- ——————————————————————————————————————————————————————————————————— CSS -->
+  <link rel="stylesheet" type="text/css" media="all" href="/static/media/css/jquery.qtip.css" />
+  <link rel="stylesheet" type="text/css" media="all" href="/static/media/css/style.css" />
+  <!-- ——————————————————————————————————————————————————————————————————— JS -->
+
+</head>
+<body>
+  <div id="header">
+    <div class="container">
+      <h2>NSI Data Explorer</h2>
+      <form method="get" id="search_form">
+        <input type="search" name="s" placeholder="Search…" id="search_field" />
+      </form>
+    </div><!-- .container -->
+  </div><!-- #header -->
+  <div id="nav">
+    <div class="container">
+      <div id="primary">
+        <ul id="primary_filter" class="option-set" data-filter-group="type">
+          <li><a href="#" data-filter="*" title="View all tools" class="selected">All</a></li>
+          <li><a href="#" data-filter=".maps" title="Tools that help you to plot data on maps.">Maps</a></li>
+          <li><a href="#" data-filter=".charts" title="Tools to create charts, graphs and diagrams.">Charts</a></li>
+          <li><a href="#" data-filter=".data" title="Tools that simplify the handling of data.">Raw Data</a></li>
+          <li><a href="#" data-filter=".color" title="Articles and Publications.">Publications</a></li>
+        </ul><!-- #primary_filter -->
+      </div>
+      <div id="secondary">
+        <span class="filter_label" id="secondary_filter_label">Code?</span>
+        <ul id="secondary_filter" class="option-set" data-filter-group="code">
+          <li><a href="#" data-filter="" title="I am happy to write some code on my own." class="selected">&#x2714;</a></li>
+          <li><a href="#" data-filter=":not('.code')" title="I don't want to bother even looking at programming code.">&#x2718;</a></li>
+      </div>
+      </ul>
+    </div><!-- .container -->
+  </div><!-- #nav -->
+  <div id="content">
+    <div class="container clearfix">
+      <div id="main" class="wide">
+        <div class="section clearfix">
+          <div class="article">
+            <div id="deck">
+              <div id="cards" class="row bottom">
+                <div class="card maps charts data">
+                  <div class="front">
+                    <img src="media/images/geo_common_thumbnail.png" width="225" height="140">
+                    <h3 class="tool_name">Muskoka Initiative</h3>
+                    <p>Maternal, Newborn, and Child Health Initiative. Data from CIDA</p>
+                    <p><a href="/mnch" title="Official Website">/mnch</a></p>
+
+                  </div>
+                  <div class="back">
+                    <h3>MNCH Data Source</h3>
+                    <p>
+                    <strong>Type: </strong>Web Application &amp; API<br/>
+                    <strong>Technology: </strong>CSV flat files<br/>
+                    <strong>License: </strong><a href="http://geocommons.com/help/Open_Source">Various</a><br/>
+                  </p>
+                    <h4>Links</h4>
+           
+                  </div>
+                </div>
+                <div class="card maps charts data">
+                  <div class="front">
+                    <img src="media/images/google_fusion_table_thumbnail.png" width="225" height="140">
+                    <h3 class="tool_name">Google Fusion Tables</h3>
+                    <p>A web application that makes it easy to host, manage, collaborate on, visualize, and publish data tables.</p>
+                    <p><a href="http://www.google.com/fusiontables" title="Official Website">http://www.google.com/fusiontables</a></p>
+                  </div>
+                  <div class="back">
+                    <h3>Google Fusion Tables</h3>
+                    <p>
+                    <strong>Type: </strong>Web Application &amp; API<br/>
+                    <strong>Technology: </strong>JavaScript, Flash<br/>
+                    <strong>License: </strong>Free to use<br/>
+                  </p>
+                    <h4>Links</h4>
+                    <ul>
+                      <li><a href="http://www.google.com/fusiontables/" title="Official Website">Website</a></li>
+                      <li><a href="https://sites.google.com/site/fusiontablestalks/stories/" title="Example Gallery">Example Gallery</a></li>
+                      <li><a href="https://developers.google.com/fusiontables/" title="API Documentation">API Documentation</a></li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="card maps charts">
+                  <div class="front">
+                    <img src="media/images/google_chart_tools_thumbnail.png" width="225" height="140">
+                    <h3 class="tool_name">Google Chart Tools</h3>
+                    <p>A collection of simple to use,  customizable and free to use interactive charts and data tools.</p>
+                    <p><a href="https://developers.google.com/chart" title="Official Website">https://developers.google.com/chart</a></p>
+                  </div>
+                  <div class="back">
+                    <h3>Google Chart Tools</h3>
+                    <p>
+                    <strong>Type: </strong>Library<br/>
+                    <strong>Technology: </strong>JavaScript<br/>
+                    <strong>License: </strong>Free to use<br/>
+                  </p>
+                    <h4>Links</h4>
+                    <ul>
+                      <li><a href="https://developers.google.com/chart/" title="Official Website">Website</a></li>
+                      <li><a href="https://google-developers.appspot.com/chart/interactive/docs/gallery/" title="Charts Gallery">Charts Gallery</a></li>
+                      <li><a href="http://code.google.com/apis/ajax/playground/?type=visualization/" title="Code Playground">Code Playground</a></li>
+                      <li><a href="https://google-developers.appspot.com/chart/interactive/docs/reference/" title="API Reference">API Reference</a></li>
+                    </ul>
+                  </div>
+                </div>
+                
+                <div class="card code charts">
+                  <div class="front">
+                    <img src="media/images/gephi_thumbnail.png" width="225" height="140">
+                    <h3 class="tool_name">Gephi</h3>
+                    <p>A visualization and exploration platform for networks with dynamic and hierarchical graphs.</p>
+                    <p><a href="http://gephi.org" title="Official Website">http://gephi.org</a></p>
+                  </div>
+                  <div class="back">
+                    <h3>Gephi</h3>
+                    <p>
+                    <strong>Type: </strong>Desktop Application<br/>
+                    <strong>Technology: </strong>Windows, Linux, MacOS X, Java<br/>
+                    <strong>License: </strong>CDDL, GPL 3<br/>
+                  </p>
+                    <h4>Links</h4>
+                    <ul>
+                      <li><a href="http://gephi.org/" title="Official Website">Website</a></li>
+                      <li><a href="http://wiki.gephi.org/index.php/Main_Page/" title="Documentation">Documentation</a></li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="card code data">
+                  <div class="front">
+                    <img src="media/images/miso_thumbnail.png" width="225" height="140">
+                    <h3 class="tool_name">Sector Information</h3>
+                    <p>A Visual Exploration of Canadian International Development Sectors.</p>
+                    <p><a href="http://misoproject.com/" title="Official Website">http://misoproject.com/</a></p>
+                  </div>
+                  <div class="back">
+                    <h3>Miso</h3>
+                    <p>
+                    <strong>Type: </strong>Library<br/>
+                    <strong>Technology: </strong>JavaScript<br/>
+                    <strong>License: </strong>MIT, GPL 2<br/>
+                  </p>
+                    <h4>Links</h4>
+                    <ul>
+                      <li><a href="http://misoproject.com/" title="Official Website">Website</a></li>
+                      <li><a href="https://github.com/misoproject/" title="GitHub Repository" class="github_repos">GitHub Repository</a></li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="card code data">
+                  <div class="front">
+                    <img src="media/images/data_thumbnail.png" width="225" height="140">
+                    <h3 class="tool_name">Data.js</h3>
+                    <p>A data representation framework providing a uniform interface to domain data.</p>
+                    <p><a href="http://substance.io/michael/data-js" title="Official Website">http://substance.io/michael/data-js</a></p>
+                  </div>
+                  <div class="back">
+                    <h3>Data.js</h3>
+                    <p>
+                    <strong>Type: </strong>Library<br/>
+                    <strong>Technology: </strong>JavaScript<br/>
+                    <strong>License: </strong>MIT<br/>
+                  </p>
+                    <h4>Links</h4>
+                    <ul>
+                      <li><a href="http://substance.io/michael/data-js" title="Official Website">Website</a></li>
+                      <li><a href="https://github.com/michael/data" title="GitHub Repository" class="github_repos">GitHub Repository</a></li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="card code charts">
+                  <div class="front">
+                    <img src="media/images/dance_thumbnail.png" width="225" height="140">
+                    <h3 class="tool_name">Dance.js</h3>
+                    <p>A simple data-driven visualization framework based on Data.js and Underscore.js</p>
+                    <p><a href="https://github.com/michael/dance" title="GitHub Repository" class="github_repos">https://github.com/michael/dance</a></p>
+                  </div>
+                  <div class="back">
+                    <h3>Dance.js</h3>
+                    <p>
+                    <strong>Type: </strong>Library<br/>
+                    <strong>Technology: </strong>JavaScript<br/>
+                    <strong>License: </strong>MIT<br/>
+                  </p>
+                    <h4>Links</h4>
+                    <ul>
+                      <li><a href="https://github.com/michael/dance" title="GitHub Repository" class="github_repos">GitHub Repository</a></li>
+                      <li><a href="http://quasipartikel.at/2012/04/25/dancing-with-data/" title="Dancing With Data">Tutorial by Michael Aufreiter</a></li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="card code charts">
+                  <div class="front">
+                    <img src="media/images/sigmajs_thumbnail.png" width="225" height="140">
+                    <h3 class="tool_name">Sigma.js</h3>
+                    <p>An open-source lightweight library to display interactively static and dynamic graphs.</p>
+                    <p><a href="http://sigmajs.org" title="Official Website">http://sigmajs.org</a></p>
+                  </div>
+                  <div class="back">
+                    <h3>Sigma.js</h3>
+                    <p>
+                    <strong>Type: </strong>Library<br/>
+                    <strong>Technology: </strong>JavaScript<br/>
+                    <strong>License: </strong>MIT<br/>
+                  </p>
+                    <h4>Links</h4>
+                    <ul>
+                      <li><a href="http://sigmajs.org/" title="Official Website">Website</a></li>
+                      <li><a href="https://github.com/jacomyal/sigma.js/" title="GitHub Repository" class="github_repos">GitHub Repository</a></li>
+                    </ul>
+                  </div>
+                </div>
+              <div class="card charts code">
+                <div class="front">
+                  <img src="media/images/peity_thumbnail.png" width="225" height="140">
+                  <h3 class="tool_name">Peity</h3>
+                    <p>A simple jQuery plugin that converts an element's content into a simple mini pie, line or bar chart.</p>
+                    <p><a href="http://benpickles.github.com/peity/" title="Official Website">http://benpickles.github.com/peity</a></p>
+                </div>
+                <div class="back">
+                  <h3>Peity</h3>
+                    <p>
+                    <strong>Type: </strong>Library<br/>
+                    <strong>Technology: </strong>JavaScript<br/>
+                    <strong>License: </strong>MIT<br/>
+                  </p>
+                    <h4>Links</h4>
+                    <ul>
+                      <li><a href="http://benpickles.github.com/peity/" title="Official Website">Website</a></li>
+                      <li><a href="https://github.com/benpickles/peity" title="GitHub Repository" class="github_repos">GitHub Repository</a></li>
+                    </ul>
+                </div>
+              </div>
+              <div class="card maps code">
+                <div class="front">
+                  <img src="media/images/unfolding_thumbnail.png" width="225" height="140">
+                  <h3 class="tool_name">Unfolding</h3>
+                    <p>A library to create interactive maps and geovisualizations in Processing and Java.</p>
+                    <p><a href="http://unfoldingmaps.org" title="Official Website">http://unfoldingmaps.org</a></p>
+                </div>
+                <div class="back">
+                  <h3>Unfolding</h3>
+                  <p>
+                    <strong>Type: </strong>Library<br/>
+                    <strong>Technology: </strong>Java<br/>
+                    <strong>License: </strong>MIT<br/>
+                  </p>
+                  <h4>Links</h4>
+                  <ul>
+                    <li><a href="http://unfoldingmaps.org" title="Official Website">Website</a></li>
+                    <li><a href="https://github.com/tillnagel/unfolding" title="GitHub Repository" class="github_repos">GitHub Repository</a></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="card color">
+                <div class="front">
+                  <img src="media/images/iwanthue_thumbnail.png" width="225" height="140">
+                  <h3 class="tool_name">I Want Hue</h3>
+                    <p>A web application to generate and refine palettes of optimally distinct colors.</p>
+                    <p><a href="http://tools.medialab.sciences-po.fr/iwanthue/" title="Official Website">http://tools.medialab.sciences-po.fr/iwanthue</a></p>
+                </div>
+                <div class="back">
+                  <h3>I Want Hue</h3>
+                  <p>
+                    <strong>Type: </strong>Web Application<br/>
+                    <strong>Technology: </strong>HTML<br/>
+                    <strong>License: </strong>Free to use<br/>
+                  </p>
+                  <h4>Links</h4>
+                  <ul>
+                    <li><a href="http://tools.medialab.sciences-po.fr/iwanthue/" title="Official Website">Website</a></li>
+                    <li><a href="https://github.com/medialab/iwanthue" title="GitHub Repository" class="github_repos">GitHub Repository</a></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="card data code">
+                <div class="front">
+                  <img src="media/images/tabula_thumbnail.png" width="225" height="140">
+                  <h3 class="tool_name">Tabula</h3>
+                    <p>A tool to extract CSV formatted data from text tables in PDF documents.</p>
+                    <p><a href="http://tabula.nerdpower.org" title="Official Website">http://tabula.nerdpower.org</a></p>
+                </div>
+                <div class="back">
+                  <h3>Tabula</h3>
+                  <p>
+                    <strong>Type: </strong>Library<br/>
+                    <strong>Technology: </strong>Javascript & Ruby<br/>
+                    <strong>License: </strong>MIT<br/>
+                  </p>
+                  <h4>Links</h4>
+                  <ul>
+                    <li><a href="http://tabula.nerdpower.org" title="Official Website">Website</a></li>
+                    <li><a href="https://github.com/jazzido/tabula" title="GitHub Repository" class="github_repos">GitHub Repository</a></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="card data">
+                <div class="front">
+                  <img src="media/images/mrnester_thumbnail.png" width="225" height="140">
+                  <h3 class="tool_name">Mr. Nester</h3>
+                    <p>A simple console for learning and experimenting with d3.js data nesting.</p>
+                    <p><a href="http://bl.ocks.org/shancarter/raw/4748131/" title="Official Website">http://bl.ocks.org/shancarter/raw/4748131</a></p>
+                </div>
+                <div class="back">
+                  <h3>Mr. Nester</h3>
+                  <p>
+                    <strong>Type: </strong>Web Application<br/>
+                    <strong>Technology: </strong>Javascript<br/>
+                    <strong>License: </strong>Free to use<br/>
+                  </p>
+                  <h4>Links</h4>
+                  <ul>
+                    <li><a href="http://bl.ocks.org/shancarter/raw/4748131/" title="Official Website">Website</a></li>
+                    <li><a href="https://gist.github.com/shancarter/4748131" title="GitHub Repository" class="github_repos">GitHub Repository</a></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="card data">
+                <div class="front">
+                  <img src="media/images/svg_crowbar_thumbnail.png" width="225" height="140">
+                  <h3 class="tool_name">SVG Crowbar</h3>
+                    <p>A bookmarklet that extracts SVG nodes from an HTML document into a SVG file.</p>
+                    <p><a href="http://nytimes.github.io/svg-crowbar" title="Official Website">http://nytimes.github.io/svg-crowbar</a></p>
+                </div>
+                <div class="back">
+                  <h3>SVG Crowbar</h3>
+                  <p>
+                    <strong>Type: </strong>Bookmarklet<br/>
+                    <strong>Technology: </strong>Javascript<br/>
+                    <strong>License: </strong>MIT<br/>
+                  </p>
+                  <h4>Links</h4>
+                  <ul>
+                    <li><a href="http://nytimes.github.io/svg-crowbar" title="Official Website">Website</a></li>
+                    <li><a href="https://github.com/NYTimes/svg-crowbar" title="GitHub Repository" class="github_repos">GitHub Repository</a></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="card charts code">
+                <div class="front">
+                  <img src="media/images/vega_thumbnail.png" width="225" height="140">
+                  <h3 class="tool_name">Vega</h3>
+                    <p>A visualization grammar, a declarative format for creating, saving and sharing visualization designs.</p>
+                    <p><a href="http://trifacta.github.io/vega/" title="Official Website">http://trifacta.github.io/vega</a></p>
+                </div>
+                <div class="back">
+                  <h3>Vega</h3>
+                  <p>
+                    <strong>Type: </strong>Library<br/>
+                    <strong>Technology: </strong>Javascript<br/>
+                    <strong>License: </strong>BSD<br/>
+                  </p>
+                  <h4>Links</h4>
+                  <ul>
+                    <li><a href="http://trifacta.github.io/vega/" title="Official Website">Website</a></li>
+                    <li><a href="https://github.com/trifacta/vega" title="GitHub Repository" class="github_repos">GitHub Repository</a></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="card charts code">
+                <div class="front">
+                  <img src="media/images/nvd3_thumbnail.png" width="225" height="140">
+                  <h3 class="tool_name">NVD3.js</h3>
+                    <p>A collection of re-usable charts and chart components for d3.js.</p>
+                    <p><a href="http://nvd3.org" title="Official Website">http://nvd3.org</a></p>
+                </div>
+                <div class="back">
+                  <h3>NVD3.js</h3>
+                  <p>
+                    <strong>Type: </strong>Bookmarklet<br/>
+                    <strong>Technology: </strong>Javascript<br/>
+                    <strong>License: </strong>Apache<br/>
+                  </p>
+                  <h4>Links</h4>
+                  <ul>
+                    <li><a href="http://nvd3.org" title="Official Website">Website</a></li>
+                    <li><a href="https://github.com/novus/nvd3" title="GitHub Repository" class="github_repos">GitHub Repository</a></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="card charts">
+                <div class="front">
+                  <img src="media/images/cytoscape_thumbnail.png" width="225" height="140">
+                  <h3 class="tool_name">Cytoscape</h3>
+                    <p>An application for visualizing complex networks and integrating these with any type of attribute data.</p>
+                    <p><a href="http://www.cytoscape.org" title="Official Website">http://www.cytoscape.org</a></p>
+                </div>
+                <div class="back">
+                  <h3>Cytoscape</h3>
+                  <p>
+                    <strong>Type: </strong>Application<br/>
+                    <strong>Technology: </strong>Java<br/>
+                    <strong>License: </strong>GPL<br/>
+                  </p>
+                  <h4>Links</h4>
+                  <ul>
+                    <li><a href="http://www.cytoscape.org" title="Official Website">Website</a></li>
+                    <li><a href="https://github.com/cytoscape" title="GitHub Repository" class="github_repos">GitHub Repository</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div><!-- .article -->
+        </div><!-- .section -->
+        <div id="footer">
+          <div id="about" class="section">
+            <div class="section_heading">
+              <h3 class="tool_name">About</h3>
+            </div><!-- .section_heading -->
+            <p class="lead">Welcome to the Canadian International Development Platform (CIDP). The CIDP is a one-of-a-kind data and analysis driven interactive platform on Canada’s engagement with the developing world. The aim of the CIDP is to engage Canadians on international development issues and elevate the quality of debate by grounding discussions in the best available evidence. The CIDP is hosted by The North-South Institute (NSI), Canada’s only independent international development think-tank. NSI was recently ranked No. 1 small think-tank in the world by the Global Go-To Think Tanks Index - See more at: http://cidpnsi.ca/home/about/#sthash.OpRooI1q.dpuf.</p>
+          </div><!-- #about -->
+          <div id="share" class="section">
+            <div class="section_heading">
+              <h3 class="tool_name">Share</h3>
+            </div><!-- .section_heading -->
+          
+          </div><!-- #share -->
+        </div><!-- #footer -->
+      </div><!-- #main -->
+    </div><!-- .container -->
+  </div><!-- #content -->
+  <!-- ——————————————————————————————————————————————————————————————————— JS -->
+  <script src="vendor/jquery/1.7.1/jquery.js"></script>
+  <script src="media/js/jquery.isotope.min.js"></script>
+  <script src="media/js/jquery.quicksearch.js"></script>
+  <script src="media/js/jquery.qtip.js"></script>
+  <script src="media/js/jquery.textutils.js"></script>
+  <script src="media/js/base.js"></script>
+  <script src="media/js/tools.js"></script>
+  <!-- ——————————————————————————————————————————————————————————————————— SHARING -->
+
+
+</body>
+</html>

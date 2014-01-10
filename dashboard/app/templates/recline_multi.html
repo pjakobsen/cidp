@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>{{title}}</h3>
+<p>{{title}}</p>
+
+<style type="text/css">
+.recline-slickgrid {
+  height: 550px;
+}
+
+.recline-timeline .vmm-timeline {
+  height: 550px;
+}
+</style>
+{% include "recline-deps.html" %}
+<div class="data-explorer-here"></div>
+
+<div style="clear: both;"></div>
+
+<script type="text/javascript" src="static/dset.js"></script>
+<script type="text/javascript" src="static/multi.js"></script>
+
+<script type=text/javascript>
+/*
+var dataset3 = new recline.Model.Dataset({
+    url: 'https://docs.google.com/spreadsheet/ccc?key=0Aon3JiuouxLUdGZPaUZsMjBxeGhfOWRlWm85MmV0UUE#gid=0',
+    backend: 'gdocs',
+	fields: [
+
+        {id: 'Start Date', type: 'date'},
+        {id: 'Project Title', 'label': 'Project Title'},
+        {id: 'Status', 'label': 'Status'}]
+
+  });
+
+  console.log(dataset3)
+  // Create a dataset with a Google Docs backend and a url to the Google Doc
+	var dataset = new recline.Model.Dataset({
+	//url:'https://docs.google.com/spreadsheet/pub?key=0AjcBMksBg7kEdDFDQi01ZHI3Mk54QlRKbThWOFMzWkE&output=csv',
+	url:'https://docs.google.com/spreadsheet/pub?key=0AjcBMksBg7kEdG8ycU15bC1WRU9OYkhmbzBxaXIyd1E&single=true&gid=0&output=csv',
+	backend: 'csv'
+
+});
+dataset.fetch()
+ console.log(dataset)
+*/
+</script>
+{% endblock %}
