@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>MNCH Map</title>
+	<meta name="generator" content="TextMate http://macromates.com/">
+	<meta name="author" content="Peder Jakobsen">
+	<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
+	<script type="text/javascript" src="vendor/jquery-ui-map/jquery.ui.map.min.js"></script>
+
+	
+	<!-- Date: 2014-01-11 -->
+	<style type="text/css">
+
+	html, body {
+	  width: 100%;
+	  height: 100%;
+	  margin: 0;
+	  padding: 0;
+	}
+	body  #map_canvas {
+		width:100%;
+		height:100%;
+		float:right;
+	}
+	body #menu {	
+		width:0%;
+		height:100%;
+		float:left;	
+		color:white;
+		background: white;
+		visibility:none;
+	}
+
+
+	</style>
+</head>
+<body>
+
+
+<script type="text/javascript">
+ $(function() { 
+
+	//var yourStartLatLng = new google.maps.LatLng(59.3426606750, 18.0736160278);
+
+		$('#map_canvas').gmap({'disableDefaultUI':true, 'callback': function() {
+			      
+					var self = this;       
+					$.getJSON( 'data/mnch_full.json', function(data) { 
+						$.each( data, function(i, item) {
+							
+							self.addMarker({ 'position': new google.maps.LatLng(item.geo[1], item.geo[0]), 'bounds':true } ).click(function() {
+								self.openInfoWindow({ 'content': 
+									"<h3>"+item.title+"</h3>"+
+									"<p>"+item.expected_results+"</p><b>From "+
+									item.start_date+ " to  " + item.end_date+" &nbsp;   &nbsp; Maximum Contribution: "+
+									item.maximum_cida_contribution+" &nbsp;   &nbsp; Amount Spent: "+
+									item.disembursed+"</b>"
+									}, this);
+					});
+				});
+			});
+		}}); 
+
+});
+    </script>
+</script>
+
+	<div id="menu">
+		<ul>
+			<li data-gmapping='{"id":"m_1","latlng":{"lat":27.6648274,"lng":-81.51575350000002},"tags":"drupal"}'>
+				<p class="info-box">Florida DrupalCamp - Feb 11 2012</p>
+			</li>
+			<li data-gmapping='{"id":"m_2","latlng":{"lat":1.352083,"lng":103.81983600000001},"tags":"drupal"}'>
+				<p class="info-box">DrupalCamp Singapore - Mar 03 2012</p>					
+			</li>
+			<li data-gmapping='{"id":"m_3","latlng":{"lat":39.7391536,"lng":-104.9847034},"tags":"drupal"}'>
+				<p class="info-box">DrupalCon 2012 Denver - Mar 20 2012</p>				
+			</li>
+			<li data-gmapping='{"id":"m_4","latlng":{"lat":36.1658899,"lng":-86.7844432},"tags":"drupal"}'>
+				<p class="info-box">DrupalCamp Nashville - Apr 28 2012</p>				
+			</li>
+			<li data-gmapping='{"id":"m_5","latlng":{"lat":55.6760968,"lng":12.568337100000008},"tags":"drupal"}'>
+				<p class="info-box">DrupalCamp Copenhagen 5.0 - May 11 2012</p>				
+			</li>
+		</ul>
+	</div>
+
+	<div id="map_canvas">map</div>
+
+</body>
+</html>

@@ -140,13 +140,22 @@ def bilateral_report():
     #table = selectis(table,'donorname','Canada')
     table = reduce_table(table)
     codes = bilateral_codes()
-    print look(table)
-    for code in codes:
-        print "---------{}---------".format(code)
+    report=[]
+    
+    for code,value in codes.iteritems():
+        print code,value
         # Select all records with code
-        t = selectis(table,'purposecode',str(code))
-        print look(t)
-        sys.exit()
+        t = select(table,lambda rec: rec[2] == code)
+        purposename=values(t,'purposename')[0]
+        t = values(t,'disbursement_national')
+        for n in t:
+            print float(n)
+        amount = round(sum([float(a) for a in t])*1000000,0)
+        adjusted = amount * (float(value)/100)
+        report.append({'purposename':purposename,'code':code, 'amount': amount, 'rate':value, 'adjusted':adjusted})
+        
+    rep=fromdicts(report)
+    print look(rep)
 
 def main():
     multilat = fromcsv('multilat-contrib.csv')

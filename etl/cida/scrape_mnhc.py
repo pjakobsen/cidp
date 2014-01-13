@@ -133,13 +133,9 @@ def scrape_project_ids():
         p_stmt = project_table.select(project_table.c.full_project_number==project_number)
         p_id= p_stmt.execute().fetchall()[0][0]
         print "-------------------", project_number, p_id
-        stmt.execute(
-                project_id=p_id,
+        stmt.execute(project_id=p_id,
                 initiative_id=initiative_id)
-    
-    
-        
-        
+   
         
 if __name__ == '__main__':
     scrape_project_ids()
