@@ -1,10 +1,9 @@
 #!/bin/sh
 
-# Due this in a script instead of python to radically improve performance
-# Count the number of lines
+# This is the fastes way to merge files into one
 
 
-function skip2 () {
+function skip2_count() () {
     # arguments to function are positional
     echo "Number of lines " in $1
     grep -c ^ $1
