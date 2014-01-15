@@ -19,6 +19,7 @@ from model import *
 from pprint import pprint
 from collections import Counter
 
+
 def bilateral_codes():
     codes = fromcsv('bilateral_contribution_rates.csv')
     codes = convert(codes, 'percent',float)
@@ -135,13 +136,14 @@ def bilateral_report():
      year, code, disembursement
     
     '''
-    table = fromcsv("crs_canada_2012.csv", dialect='excel', delimiter="|")
+    table = fromcsv("/Users/peder/dev/cidp/data/crs/h.csv", dialect='excel', delimiter="|")
+    #table = fromcsv("crs_canada_2012.csv", dialect='excel', delimiter="|")
      # create crs project objects
     #table = selectis(table,'donorname','Canada')
     table = reduce_table(table)
     codes = bilateral_codes()
-    report=[]
-    
+    report_2011=[]
+    report_2012=[]
     for code,value in codes.iteritems():
         print code,value
         # Select all records with code
@@ -152,10 +154,13 @@ def bilateral_report():
             print float(n)
         amount = round(sum([float(a) for a in t])*1000000,0)
         adjusted = amount * (float(value)/100)
+        
         report.append({'purposename':purposename,'code':code, 'amount': amount, 'rate':value, 'adjusted':adjusted})
         
     rep=fromdicts(report)
     print look(rep)
+    
+
 
 def main():
     multilat = fromcsv('multilat-contrib.csv')
@@ -169,6 +174,89 @@ def main():
     doug.number_of_legs = 4  
     doug.count_legs()
     
+def g8_report_from_csv(mnch_exclude=False):
+    bilaterals_g8=[]
+    multilaterals_g8=[]
+    
+    
+    bilat_codes = bilateral_codes()
+    
+    bilat_counter=Counter()
+    titles=[]
+    bilateral=[]
+    multilateral=[]
+    projectnumbers=[]
+    # Eliminate records with cat  f.csv | grep -v "2009|301" -a  >> g.csv
+    table = fromcsv("/Users/peder/dev/cidp/data/crs/h.csv", delimiter="|")  
+    pprint(header(table))
+
+    mnch=fromcsv('../etl/mnch/mnch_secret.csv')
+    print look(mnch)
+    print header(mnch)
+    print len(mnch)
+    print len(set(mnch))
+    #sys.exit()
+    mnch_ids=values(mnch,'Project Number')
+    #print mnch_ids
+    for row in records(table):
+        # skip any records not from CIDA
+        if row[3] != '1':
+            
+            continue
+        elif row['projectnumber'] in mnch_ids and mnch_exclude:
+            
+            continue 
+        else:
+            titles.append(row['projecttitle'].split(" / ")[0])
+            projectnumbers.append(row['projectnumber'])
+            #print row['Year'], row['projectnumber'],row['bi_multi'],row['usd_disbursement'], row['purposecode'],  row['projecttitle']
+            #print ">> " , row['usd_disbursement']
+            
+            try:
+                amount = float(row['usd_disbursement'])
+                if row['bi_multi'] == '1': 
+                    bilateral.append(amount)
+                    # NOW THE MEAT
+                        
+                    if row['purposecode'] in bilat_codes:
+                        bilat_counter[row['purposecode']]+=1
+                        bilaterals_g8.append((row['purposecode'],row['usd_disbursement']))
+                elif row['bi_multi'] == '3':
+                    multilateral.append(amount)
+            except ValueError:
+                pass
+            
+    print "-----TITLES--------"
+    print len(titles)
+    print len(set(titles))
+    
+    print "-----PROJECT NUMBERS--------"
+    print len(projectnumbers)
+    print len(set(projectnumbers))
+    
+    print "--------TOTAL SUMS----------"
+    print "Bilateral Disembursements Total:", sum(bilateral)
+    print "Multilateral Disembursements Total:", sum(multilateral)
+    
+    print "-------------- Bilateral Project Codes ---------------"
+    print list(bilat_counter)
+    
+    print "-------------- Bilateral Totals  ---------------"
+    bi_total=[]
+    for r in bilaterals_g8:
+        percent = float(bilat_codes[r[0]])/100
+        a = float(r[1]) * percent
+        bi_total.append(a)
+    print sum(bi_total)
+
+def multilateral_spending():
+    table=fromcsv('../etl/mnch/crs_multilat_spending.csv')
+    print header(table)
+    for row in records(table):
+        print row['Sector Recipient']#,row['G8rate']
+    
 if __name__ == '__main__':
-	bilateral_report()
+    bilateral_report()
+	#g8_report_from_csv()
+	#multilateral_spending()
 

@@ -46,7 +46,10 @@ def report(project_number=None):
         entries = [{"id" : row[0], "project_number" :row[3],"project_name":row[5],"url":row[4]} for row in result.fetchall()]
         return render_template('index.html', entries=entries)
     
-
+@app.route('/search')
+def search():
+    d ='https://docs.google.com/spreadsheet/pub?key=0AjcBMksBg7kEdHRrZXc3TG1qUHBZekdPdXdvX1BodUE&single=true&gid=0&output=csv'
+    return render_template('recline_search.html', title='Search View',data=d)
     
 @app.route('/data/mnch.csv')
 def static_csv():

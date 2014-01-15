@@ -26,6 +26,7 @@ do
    echo >> final.csv
    
 done
+
 TODO remove blank lines grep -v '^$' input.txt > output.txt
 iconv -f ASCII -t utf-8//IGNORE final.csv >  final_fixed_chars.csv
 rm final.csv
