@@ -304,14 +304,18 @@ def fusion_report():
         #print look(rep)
         #reorder columns
         rep2 = cut(rep,2,3,1,4,0)
-        print lookall(rep2)
+        tocsv('mnch_2011.csv', rep)
+        return rep2
         
         
-    print "\n\n\n\n"
-    print "<h2>{}</h2>".format('2011')
-    full_report(t2011)
-    print "<h2>{}</h2>".format('2012')
-    full_report(t2012)
+    #print "\n\n\n\n"
+    #print "<h2>{}</h2>".format('2011')
+    t1 = full_report(t2011)
+    #print "<h2>{}</h2>".format('2012')
+    #t2 = full_report(t2012)
+    
+    #tocsv('t2011.csv',t1)
+    #tocsv('t2012.csv',t1)
     
     fast_count(t2011, "2011")
     fast_count(t2012, "2012")
