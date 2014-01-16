@@ -18,6 +18,7 @@ import model
 from model import *
 from pprint import pprint
 from collections import Counter
+import locale
 
 
 def bilateral_codes():
@@ -137,6 +138,8 @@ def bilateral_report():
     
     '''
     table = fromcsv("/Users/peder/dev/cidp/data/crs/h.csv", dialect='excel', delimiter="|")
+    pprint(header(table))
+    sys.exit()
     #table = fromcsv("crs_canada_2012.csv", dialect='excel', delimiter="|")
      # create crs project objects
     #table = selectis(table,'donorname','Canada')
@@ -254,9 +257,68 @@ def multilateral_spending():
     print header(table)
     for row in records(table):
         print row['Sector Recipient']#,row['G8rate']
+ 
+def fusion_report():
+    
+    table = fromcsv("data/crs dac kc 2011 2012-summary.csv")
+    print header(table)
+    t2011=selecteq(table,'Year','2011')
+    t2012=selecteq(table,'Year','2012')
+    print look(t2011)
+    print look(t2012)
+    #for r in records(table):
+    
+
+    def dollars(a, sumit=False):
+            mult=1000000
+            if sumit:
+                t = int(round(sum(a)*mult,0))
+            else:
+                t = int(round(a*mult,0))
+
+            locale.setlocale( locale.LC_ALL, '' )
+            return locale.currency( t, grouping=True )
+    
+    def fast_count(t,y):
+        amounts = [float(r['SUM(usd_disbursement)']) for r in records(t) if r['purposecode'] in  bilateral_codes()]
+        g8_amounts = [float(r['SUM(usd_disbursement)'])*(bilateral_codes()[r['purposecode']]/100) for r in records(t) if r['purposecode'] in  bilateral_codes()]
+           
+        print y, "Total Spending for MNCH Purposecodes\t", dollars(amounts,True)
+        print y, "Total Spending with G8 formula applied\t", dollars(g8_amounts,True)
+        print "------"
+        
+    
+    def full_report(t):
+        report=[]
+        for k,v in bilateral_codes().iteritems():
+
+            r = selecteq(t,'purposecode',k)
+            l = records(r)[0]
+            full=dollars(float(l[4]))
+            
+            g8=dollars(float(l[4])*(v/100))
+            report.append({'code':l[0],'name':l[1],'full_amount':full, 'g8_amount':g8, 'rate':v})
+        
+        #pprint(report)
+        rep=fromdicts(report)
+        #print look(rep)
+        #reorder columns
+        rep2 = cut(rep,2,3,1,4,0)
+        print lookall(rep2)
+        
+        
+    print "\n\n\n\n"
+    print "<h2>{}</h2>".format('2011')
+    full_report(t2011)
+    print "<h2>{}</h2>".format('2012')
+    full_report(t2012)
+    
+    fast_count(t2011, "2011")
+    fast_count(t2012, "2012")
     
 if __name__ == '__main__':
-    bilateral_report()
+    fusion_report()
+    #bilateral_report()
 	#g8_report_from_csv()
 	#multilateral_spending()
 
